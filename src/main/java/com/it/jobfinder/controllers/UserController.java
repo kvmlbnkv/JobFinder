@@ -1,11 +1,10 @@
 package com.it.jobfinder.controllers;
 
+import com.it.jobfinder.dtos.RegistrationDTO;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +22,15 @@ public class UserController {
     @GetMapping("getAll")
     public List<User> getAllUsers(){
         return this.userService.getAllUsers();
+    }
+
+    @GetMapping("get")
+    public User getUser(@RequestBody()String username){
+        return this.userService.getUser(username);
+    }
+
+    @PostMapping("register")
+    public void registerUser(@RequestBody()RegistrationDTO dto){
+        this.userService.addUser(RegistrationDTO dto);
     }
 }
