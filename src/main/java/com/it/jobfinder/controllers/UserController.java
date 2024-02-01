@@ -4,6 +4,8 @@ import com.it.jobfinder.dtos.RegistrationDTO;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +32,8 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public void registerUser(@RequestBody()RegistrationDTO dto){
-        this.userService.addUser(RegistrationDTO dto);
+    public ResponseEntity<User> registerUser(@RequestBody()RegistrationDTO dto){
+        return new ResponseEntity<>(this.userService.addUser(dto), HttpStatus.OK);
+
     }
 }

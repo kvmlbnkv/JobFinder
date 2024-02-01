@@ -5,6 +5,7 @@ import com.it.jobfinder.entities.User;
 import com.it.jobfinder.exceptions.NoSuchUserException;
 import com.it.jobfinder.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,13 +27,12 @@ public class UserService{
     }
 
     public User getUser(String username) {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
 
-        return optionalUser.orElseThrow(NoSuchUserException::new);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("There's no user with such name in the database"));
     }
 
-    public void addUser(RegistrationDTO dto){
-
-        userRepository.save(user);
+    public User addUser(RegistrationDTO dto){
+        return userRepository.save(new User(dto.getUsername(), dto.getPassword(), dto.getEmail(), dto.getRole()));
     }
 }
