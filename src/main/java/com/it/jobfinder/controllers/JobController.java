@@ -3,6 +3,7 @@ package com.it.jobfinder.controllers;
 import com.it.jobfinder.dtos.JobDTO;
 import com.it.jobfinder.entities.Job;
 import com.it.jobfinder.services.JobService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +13,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("job")
 public class JobController {
 
-    private JobService jobService;
-
-    @Autowired
-    public JobController(JobService jobService) {
-        this.jobService = jobService;
-    }
+    private final JobService jobService;
 
     @GetMapping("getAll")
     public ResponseEntity<List<Job>> getAllJobs(){

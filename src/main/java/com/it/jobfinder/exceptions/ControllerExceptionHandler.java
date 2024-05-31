@@ -1,6 +1,5 @@
-package com.it.jobfinder.controllers;
+package com.it.jobfinder.exceptions;
 
-import com.it.jobfinder.exceptions.UserDuplicateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +16,21 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(UserDuplicateException.class)
     public ResponseEntity<String> userDuplicateHandler(UserDuplicateException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(NoSuchJobException.class)
+    public ResponseEntity<String> noSuchJobHandler(NoSuchJobException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(NoSuchSkillException.class)
+    public ResponseEntity<String> noSuchSkillHandler(NoSuchSkillException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(IncorrectCredentialsException.class)
+    public ResponseEntity<String> incorrectCredentialsHandler(IncorrectCredentialsException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
     }
 }
