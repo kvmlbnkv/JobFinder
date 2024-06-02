@@ -26,6 +26,7 @@ public class JWTGenerator {
     public String generate(Authentication authentication){
         return Jwts.builder()
                 .subject(authentication.getName())
+                .claim("authorities", authentication.getAuthorities())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + Integer.parseInt(this.tokenLength)))
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.key)))

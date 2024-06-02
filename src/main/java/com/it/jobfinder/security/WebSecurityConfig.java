@@ -30,12 +30,14 @@ public class WebSecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTGenerator jwtGenerator;
+    private final JWTVerifier jwtVerifier;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilter(new CustomAuthenticationFilter(this.authenticationManager(authenticationConfiguration), jwtGenerator))
+                .addFilterAfter(new JWTVerificationFilter(jwtVerifier), CustomAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers( "/user/register", "/user/login", "/login").permitAll()
                         .requestMatchers("/job/add").hasAuthority(UserRole.EMPLOYER.name())

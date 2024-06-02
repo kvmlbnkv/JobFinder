@@ -15,7 +15,7 @@ public class JobDTO {
 
     private String description;
 
-    private List<Skill> requirements;
+    private List<SkillDTO> requirements;
 
     private LocalDate dueTo;
 
