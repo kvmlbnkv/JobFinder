@@ -2,6 +2,9 @@ package com.it.jobfinder.controllers;
 
 import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.dtos.RegistrationDTO;
+import com.it.jobfinder.dtos.UserSkillDTO;
+import com.it.jobfinder.entities.EmployeeSkills;
+import com.it.jobfinder.entities.Skill;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,16 @@ public class UserController {
     @PostMapping("register")
     public ResponseEntity<User> registerUser(@RequestBody()RegistrationDTO dto){
         return new ResponseEntity<>(this.userService.addUser(dto), HttpStatus.CREATED);
+    }
+
+    @PostMapping("addSkill")
+    public ResponseEntity<EmployeeSkills> addSkillToUser(@RequestBody()UserSkillDTO dto){
+        return new ResponseEntity<>(this.userService.addSkillToUser(dto), HttpStatus.OK);
+    }
+
+    @GetMapping("getSkills")
+    public ResponseEntity<EmployeeSkills> getUserSkills(@RequestBody()String username){
+        return new ResponseEntity<>(this.userService.getUserSkills(username), HttpStatus.OK);
     }
     /*
     @PostMapping("login")

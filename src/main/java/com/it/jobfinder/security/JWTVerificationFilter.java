@@ -63,10 +63,9 @@ public class JWTVerificationFilter extends OncePerRequestFilter {
     protected Collection<? extends GrantedAuthority> getAuthorities(Claims claims){
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         Collection<?> tokenAuthorities = claims.get("authorities", Collection.class);
-        for (Object xd : tokenAuthorities){
-            LinkedHashMap xd1 = (LinkedHashMap) xd;
-            authorities.add(new SimpleGrantedAuthority((String) xd1.get("authority")));
-
+        for (Object auth : tokenAuthorities){
+            LinkedHashMap<String, String> authMap = (LinkedHashMap<String, String>) auth;
+            authorities.add(new SimpleGrantedAuthority(authMap.get("authority")));
         }
 
         return authorities;
