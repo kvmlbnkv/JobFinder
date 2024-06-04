@@ -47,6 +47,11 @@ public class UserController {
     public ResponseEntity<EmployeeSkills> getUserSkills(@RequestBody()String username){
         return new ResponseEntity<>(this.userService.getUserSkills(username), HttpStatus.OK);
     }
+
+    @DeleteMapping("deleteSkill")
+    public ResponseEntity<Boolean> deleteSkillFromUser(@RequestBody()UserSkillDTO dto){
+        return new ResponseEntity<>(this.userService.deleteSkillFromUser(dto), HttpStatus.OK);
+    }
     /*
     @PostMapping("login")
     public ResponseEntity<String> loginUser(@RequestBody() LoginDTO dto){

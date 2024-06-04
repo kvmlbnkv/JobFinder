@@ -57,8 +57,6 @@ public class UserService{
     }
 
     public EmployeeSkills addSkillToUser(UserSkillDTO dto){
-        System.out.println(dto.getUsername());
-        System.out.println(dto.getSkill());
         Optional<User> username = userRepository.findByUsername(dto.getUsername());
         if (username.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
 
@@ -78,8 +76,25 @@ public class UserService{
     public EmployeeSkills getUserSkills(String username){
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
+        Optional<EmployeeSkills> employeeSkills = employeeSkillsRepository.findById(user.get().getId());
+        if (employeeSkills.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
 
-        return employeeSkillsRepository.findById(user.get().getId()).get();
+        return employeeSkills.get();
+    }
+
+    public boolean deleteSkillFromUser(UserSkillDTO dto){
+        Optional<User> username = userRepository.findByUsername(dto.getUsername());
+        if (username.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
+
+        Optional<Skill> skill = skillRepository.findByName(dto.getSkill());
+        if (skill.isEmpty()) throw new NoSuchSkillException("There's no such skill in the db");
+
+        Optional<EmployeeSkills> employeeSkills = employeeSkillsRepository.findById(username.get().getId());
+        if (employeeSkills.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
+
+        if (!employeeSkills.get().getSkills().contains(skill.get())) throw new NoSuchSkillException("User doesn't have such skill");
+
+        return employeeSkills.get().getSkills().remove(skill.get());
     }
     /*
     public String loginUser(LoginDTO dto){
