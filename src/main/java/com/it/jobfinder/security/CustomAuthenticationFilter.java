@@ -47,10 +47,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, Authentication authentication) throws IOException {
         String token = jwtGenerator.generate(authentication);
+        /* json return
         Map<String, Object> tokens = new HashMap<>();
         tokens.put("accessToken", token);
         response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+        new ObjectMapper().writeValue(response.getOutputStream(), tokens);*/
+        response.getOutputStream().write(token.getBytes());
     }
 
     @Override

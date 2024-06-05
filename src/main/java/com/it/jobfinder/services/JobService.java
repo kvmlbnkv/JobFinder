@@ -36,7 +36,7 @@ public class JobService {
 
         List<Skill> requirements = new ArrayList<>();
         for (SkillDTO skillDTO : dto.getRequirements()){
-            skillRepository.findByName(skillDTO.getName()).ifPresent(requirements::add);
+            skillRepository.findByName(skillDTO.getSkill()).ifPresent(requirements::add);
         }
 
         return this.jobRepository.save(new Job(user, dto.getName(), dto.getDescription(), requirements, dto.getDueTo(), dto.isClosed()));

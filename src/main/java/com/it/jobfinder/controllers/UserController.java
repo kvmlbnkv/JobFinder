@@ -2,8 +2,8 @@ package com.it.jobfinder.controllers;
 
 import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.dtos.RegistrationDTO;
+import com.it.jobfinder.dtos.SkillDTO;
 import com.it.jobfinder.dtos.UserSkillDTO;
-import com.it.jobfinder.entities.EmployeeSkills;
 import com.it.jobfinder.entities.Skill;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.services.UserService;
@@ -39,12 +39,12 @@ public class UserController {
     }
 
     @PostMapping("addSkill")
-    public ResponseEntity<EmployeeSkills> addSkillToUser(@RequestBody()UserSkillDTO dto){
+    public ResponseEntity<List<Skill>> addSkillToUser(@RequestBody()UserSkillDTO dto){
         return new ResponseEntity<>(this.userService.addSkillToUser(dto), HttpStatus.OK);
     }
 
     @GetMapping("getSkills")
-    public ResponseEntity<EmployeeSkills> getUserSkills(@RequestBody()String username){
+    public ResponseEntity<List<Skill>> getUserSkills(@RequestBody()String username){
         return new ResponseEntity<>(this.userService.getUserSkills(username), HttpStatus.OK);
     }
 

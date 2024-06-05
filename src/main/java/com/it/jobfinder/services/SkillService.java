@@ -28,12 +28,12 @@ public class SkillService {
     }
 
     public Skill addSkill(SkillDTO dto) {
-        String name = dto.getName();
+        String name = dto.getSkill();
 
         Optional<Skill> skill = skillRepository.findByName(name);
 
         if (skill.isPresent()) throw new SkillDuplicateException("Skill already in db");
 
-        return skillRepository.save(new Skill(dto.getName()));
+        return skillRepository.save(new Skill(dto.getSkill()));
     }
 }

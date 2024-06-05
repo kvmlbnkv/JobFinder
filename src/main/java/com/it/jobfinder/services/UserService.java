@@ -2,12 +2,12 @@ package com.it.jobfinder.services;
 
 import com.it.jobfinder.dtos.RegistrationDTO;
 import com.it.jobfinder.dtos.UserSkillDTO;
-import com.it.jobfinder.entities.EmployeeSkills;
 import com.it.jobfinder.entities.Skill;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.entities.UserRole;
-import com.it.jobfinder.exceptions.*;
-import com.it.jobfinder.repositories.EmployeeSkillsRepository;
+import com.it.jobfinder.exceptions.NoSuchSkillException;
+import com.it.jobfinder.exceptions.SkillAlreadyAcquiredException;
+import com.it.jobfinder.exceptions.UserDuplicateException;
 import com.it.jobfinder.repositories.SkillRepository;
 import com.it.jobfinder.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,6 @@ public class UserService{
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmployeeSkillsRepository employeeSkillsRepository;
     private final SkillRepository skillRepository;
 
     public List<User> getAllUsers() {
@@ -45,41 +44,37 @@ public class UserService{
         Optional<User> email = userRepository.findByEmail(dto.getEmail());
         if (email.isPresent()) throw new UserDuplicateException("Email taken");
 
-        User user = userRepository.save(new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), dto.getEmail(), dto.getRole()));
+        User user = new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), dto.getEmail(), dto.getRole());
 
 
         if(user.getRole().equals(UserRole.EMPLOYEE)){
-            EmployeeSkills employeeSkills = new EmployeeSkills(user.getId(), new ArrayList<>());
-            employeeSkillsRepository.save(employeeSkills);
+            List<Skill> employeeSkills = new ArrayList<>();
+            user.setSkills(employeeSkills);
         }
 
-        return user;
+        return userRepository.save(user);
     }
 
-    public EmployeeSkills addSkillToUser(UserSkillDTO dto){
+    public List<Skill> addSkillToUser(UserSkillDTO dto){
         Optional<User> username = userRepository.findByUsername(dto.getUsername());
         if (username.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
 
         Optional<Skill> skill = skillRepository.findByName(dto.getSkill());
         if (skill.isEmpty()) throw new NoSuchSkillException("There's no such skill in the db");
 
-        Optional<EmployeeSkills> employeeSkills = employeeSkillsRepository.findById(username.get().getId());
-        if (employeeSkills.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
+        if (username.get().getSkills().contains(skill.get())) throw new SkillAlreadyAcquiredException("User already has added such skill");
 
-        if (employeeSkills.get().getSkills().contains(skill.get())) throw new SkillAlreadyAcquiredException("User already has added such skill");
-
-        employeeSkills.get().getSkills().add(skill.get());
-        return employeeSkillsRepository.save(employeeSkills.get());
+        username.get().getSkills().add(skill.get());
+        userRepository.save(username.get());
+        return username.get().getSkills();
     }
 
 
-    public EmployeeSkills getUserSkills(String username){
+    public List<Skill> getUserSkills(String username){
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
-        Optional<EmployeeSkills> employeeSkills = employeeSkillsRepository.findById(user.get().getId());
-        if (employeeSkills.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
 
-        return employeeSkills.get();
+        return user.get().getSkills();
     }
 
     public boolean deleteSkillFromUser(UserSkillDTO dto){
@@ -89,12 +84,9 @@ public class UserService{
         Optional<Skill> skill = skillRepository.findByName(dto.getSkill());
         if (skill.isEmpty()) throw new NoSuchSkillException("There's no such skill in the db");
 
-        Optional<EmployeeSkills> employeeSkills = employeeSkillsRepository.findById(username.get().getId());
-        if (employeeSkills.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
+        if (!username.get().getSkills().contains(skill.get())) throw new NoSuchSkillException("User doesn't have such skill");
 
-        if (!employeeSkills.get().getSkills().contains(skill.get())) throw new NoSuchSkillException("User doesn't have such skill");
-
-        return employeeSkills.get().getSkills().remove(skill.get());
+        return username.get().getSkills().remove(skill.get());
     }
     /*
     public String loginUser(LoginDTO dto){

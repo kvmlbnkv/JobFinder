@@ -38,4 +38,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<String> skillalreadyAcquiredHandler(SkillAlreadyAcquiredException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(SkillDuplicateException.class)
+    public ResponseEntity<String> skillDuplicateHandler(SkillDuplicateException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
 }
