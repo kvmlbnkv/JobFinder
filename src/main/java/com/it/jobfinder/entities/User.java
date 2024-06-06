@@ -32,9 +32,6 @@ public class User implements UserDetails {
 
     private UserRole role;
 
-    @OneToMany
-    private List<Skill> skills;
-
     private boolean locked;
 
     private boolean enabled;

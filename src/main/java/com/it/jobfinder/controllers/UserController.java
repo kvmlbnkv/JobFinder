@@ -33,11 +33,18 @@ public class UserController {
         return new ResponseEntity<>(this.userService.getUser(username), HttpStatus.OK);
     }
 
+    @DeleteMapping("delete")
+    public ResponseEntity<Void> deleteUser(@RequestBody()LoginDTO dto){
+        this.userService.deleteUser(dto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("register")
     public ResponseEntity<User> registerUser(@RequestBody()RegistrationDTO dto){
         return new ResponseEntity<>(this.userService.addUser(dto), HttpStatus.CREATED);
     }
 
+    /*
     @PostMapping("addSkill")
     public ResponseEntity<List<Skill>> addSkillToUser(@RequestBody()UserSkillDTO dto){
         return new ResponseEntity<>(this.userService.addSkillToUser(dto), HttpStatus.OK);
@@ -52,7 +59,7 @@ public class UserController {
     public ResponseEntity<Boolean> deleteSkillFromUser(@RequestBody()UserSkillDTO dto){
         return new ResponseEntity<>(this.userService.deleteSkillFromUser(dto), HttpStatus.OK);
     }
-    /*
+
     @PostMapping("login")
     public ResponseEntity<String> loginUser(@RequestBody() LoginDTO dto){
         return new ResponseEntity<>(this.userService.loginUser(dto), HttpStatus.OK);

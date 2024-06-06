@@ -1,16 +1,17 @@
 package com.it.jobfinder.services;
 
+import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.dtos.RegistrationDTO;
 import com.it.jobfinder.dtos.UserSkillDTO;
-import com.it.jobfinder.entities.Skill;
-import com.it.jobfinder.entities.User;
-import com.it.jobfinder.entities.UserRole;
+import com.it.jobfinder.entities.*;
 import com.it.jobfinder.exceptions.NoSuchSkillException;
 import com.it.jobfinder.exceptions.SkillAlreadyAcquiredException;
 import com.it.jobfinder.exceptions.UserDuplicateException;
+import com.it.jobfinder.repositories.EmployeeUserRepository;
 import com.it.jobfinder.repositories.SkillRepository;
 import com.it.jobfinder.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SkillRepository skillRepository;
+    private final EmployeeUserRepository employeeUserRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -45,16 +47,28 @@ public class UserService{
         if (email.isPresent()) throw new UserDuplicateException("Email taken");
 
         User user = new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), dto.getEmail(), dto.getRole());
-
+        userRepository.save(user);
 
         if(user.getRole().equals(UserRole.EMPLOYEE)){
             List<Skill> employeeSkills = new ArrayList<>();
-            user.setSkills(employeeSkills);
+
+            EmployeeUser employeeUser = new EmployeeUser();
         }
 
-        return userRepository.save(user);
+        return user;
     }
 
+    public void deleteUser(LoginDTO dto) {
+        Optional<User> user = userRepository.findByUsername(dto.getUsername());
+        if (user.isEmpty()) throw new UsernameNotFoundException("Incorrect username");
+
+        if (!passwordEncoder.matches(dto.getPassword(),user.get().getPassword())) throw new BadCredentialsException("Incorrect password");
+
+        this.userRepository.delete(user.get());
+    }
+
+
+    /*
     public List<Skill> addSkillToUser(UserSkillDTO dto){
         Optional<User> username = userRepository.findByUsername(dto.getUsername());
         if (username.isEmpty()) throw new UsernameNotFoundException("There's no such username in the db");
@@ -88,7 +102,8 @@ public class UserService{
 
         return username.get().getSkills().remove(skill.get());
     }
-    /*
+
+
     public String loginUser(LoginDTO dto){
         Optional<User> user = userRepository.findByUsername(dto.getUsername());
         if (user.isEmpty()) throw new IncorrectCredentialsException("Incorrect username");
