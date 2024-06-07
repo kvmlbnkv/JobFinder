@@ -39,9 +39,10 @@ public class WebSecurityConfig {
                 .addFilter(new CustomAuthenticationFilter(this.authenticationManager(authenticationConfiguration), jwtGenerator))
                 .addFilterAfter(new JWTVerificationFilter(jwtVerifier), CustomAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers( "/user/register", "/user/login", "/login").permitAll()
+                                .anyRequest().permitAll()
+                        /*.requestMatchers( "/user/register", "/user/login", "/login").permitAll()
                         .requestMatchers("/job/add").hasAuthority(UserRole.EMPLOYER.name())
-                        .anyRequest().authenticated())
+                        */)
                 .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();

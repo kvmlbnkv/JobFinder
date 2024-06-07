@@ -15,5 +15,5 @@ public class EmployeeDTO {
 
     private String description;
 
-    private List<Skill> skills;
+    private List<SkillDTO> skills;
 }

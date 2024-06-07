@@ -1,5 +1,7 @@
 package com.it.jobfinder.controllers;
 
+import com.it.jobfinder.dtos.EmployeeDTO;
+import com.it.jobfinder.dtos.EmployeeRegistrationDTO;
 import com.it.jobfinder.dtos.RegistrationDTO;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.services.EmployeeService;
@@ -21,7 +23,7 @@ public class EmployeeController {
 
 
     @PostMapping("register")
-    public ResponseEntity<User> registerEmployee(@RequestBody() RegistrationDTO dto){
+    public ResponseEntity<User> registerEmployee(@RequestBody() EmployeeRegistrationDTO dto){
         return new ResponseEntity<>(this.employeeService.addEmployee(dto), HttpStatus.CREATED);
     }
 }

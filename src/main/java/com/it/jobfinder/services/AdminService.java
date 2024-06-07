@@ -1,12 +1,12 @@
 package com.it.jobfinder.services;
 
-import com.it.jobfinder.dtos.EmployerRegistrationDTO;
+import com.it.jobfinder.dtos.AdminRegistrationDTO;
+import com.it.jobfinder.entities.AdminUser;
 import com.it.jobfinder.entities.EmployeeUser;
-import com.it.jobfinder.entities.EmployerUser;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.entities.UserRole;
 import com.it.jobfinder.exceptions.UserDuplicateException;
-import com.it.jobfinder.repositories.EmployerUserRepository;
+import com.it.jobfinder.repositories.AdminUserRepository;
 import com.it.jobfinder.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,24 +17,25 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class EmployerService {
+public class AdminService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmployerUserRepository employerUserRepository;
+    private final AdminUserRepository adminUserRepository;
 
-    public User addEmployer(EmployerRegistrationDTO dto) {
+
+    public User addAdmin(AdminRegistrationDTO dto) {
         Optional<User> username = userRepository.findByUsername(dto.getUsername());
         if (username.isPresent()) throw new UserDuplicateException("Username taken");
 
         Optional<User> email = userRepository.findByEmail(dto.getEmail());
         if (email.isPresent()) throw new UserDuplicateException("Email taken");
 
-        User user = new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), dto.getEmail(), UserRole.EMPLOYER);
+        User user = new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), dto.getEmail(), UserRole.ADMIN);
         userRepository.save(user);
 
-        EmployerUser employerUser = new EmployerUser(user.getId(), dto.getName(), "");
-        employerUserRepository.save(employerUser);
+        AdminUser adminUser = new AdminUser(user.getId(), dto.getName(), dto.getSurname());
+        adminUserRepository.save(adminUser);
 
         return user;
     }
