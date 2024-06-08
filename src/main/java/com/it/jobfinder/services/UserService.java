@@ -7,7 +7,6 @@ import com.it.jobfinder.entities.*;
 import com.it.jobfinder.exceptions.NoSuchSkillException;
 import com.it.jobfinder.exceptions.SkillAlreadyAcquiredException;
 import com.it.jobfinder.exceptions.UserDuplicateException;
-import com.it.jobfinder.repositories.EmployeeUserRepository;
 import com.it.jobfinder.repositories.SkillRepository;
 import com.it.jobfinder.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ public class UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SkillRepository skillRepository;
-    private final EmployeeUserRepository employeeUserRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -40,8 +38,8 @@ public class UserService{
     }
 
     public User addUser(RegistrationDTO dto){
-        Optional<User> username = userRepository.findByUsername(dto.getUsername());
-        if (username.isPresent()) throw new UserDuplicateException("Username taken");
+        Optional<User> userOptional = userRepository.findByUsername(dto.getUsername());
+        if (userOptional.isPresent()) throw new UserDuplicateException("Username taken");
 
         Optional<User> email = userRepository.findByEmail(dto.getEmail());
         if (email.isPresent()) throw new UserDuplicateException("Email taken");
@@ -49,22 +47,16 @@ public class UserService{
         User user = new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), dto.getEmail(), dto.getRole());
         userRepository.save(user);
 
-        if(user.getRole().equals(UserRole.EMPLOYEE)){
-            List<Skill> employeeSkills = new ArrayList<>();
-
-            EmployeeUser employeeUser = new EmployeeUser();
-        }
-
         return user;
     }
 
     public void deleteUser(LoginDTO dto) {
-        Optional<User> user = userRepository.findByUsername(dto.getUsername());
-        if (user.isEmpty()) throw new UsernameNotFoundException("Incorrect username");
+        Optional<User> userOptional = userRepository.findByUsername(dto.getUsername());
+        if (userOptional.isEmpty()) throw new UsernameNotFoundException("Incorrect username");
 
-        if (!passwordEncoder.matches(dto.getPassword(),user.get().getPassword())) throw new BadCredentialsException("Incorrect password");
+        if (!passwordEncoder.matches(dto.getPassword(), userOptional.get().getPassword())) throw new BadCredentialsException("Incorrect password");
 
-        this.userRepository.delete(user.get());
+        this.userRepository.delete(userOptional.get());
     }
 
 

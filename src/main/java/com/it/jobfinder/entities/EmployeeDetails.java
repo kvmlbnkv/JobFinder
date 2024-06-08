@@ -1,12 +1,12 @@
 package com.it.jobfinder.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,10 +15,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "employees")
-public class EmployeeUser{
-    @Id
-    private UUID userId;
+public class EmployeeDetails extends Details{
 
     private String name;
 
@@ -28,4 +25,5 @@ public class EmployeeUser{
 
     @OneToMany
     private List<Skill> skills;
+
 }

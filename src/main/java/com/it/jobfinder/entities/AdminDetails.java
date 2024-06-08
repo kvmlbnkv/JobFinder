@@ -1,25 +1,22 @@
 package com.it.jobfinder.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "employers")
-public class EmployerUser {
-
-    @Id
-    private UUID userId;
+public class AdminDetails extends Details{
 
     private String name;
 
-    private String description;
+    private String surname;
+
 }

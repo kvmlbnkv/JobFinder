@@ -31,7 +31,6 @@ public class SkillService {
         String name = dto.getSkill();
 
         Optional<Skill> skill = skillRepository.findByName(name);
-
         if (skill.isPresent()) throw new SkillDuplicateException("Skill already in db");
 
         return skillRepository.save(new Skill(dto.getSkill()));

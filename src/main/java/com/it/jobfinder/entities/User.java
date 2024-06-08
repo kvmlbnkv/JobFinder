@@ -32,6 +32,9 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    @OneToOne
+    private Details details;
+
     private boolean locked;
 
     private boolean enabled;
@@ -41,6 +44,16 @@ public class User implements UserDetails {
         this.password = password;
         this.email = email;
         this.role = role;
+        this.locked = false;
+        this.enabled = true;
+    }
+
+    public User(String username, String password, String email, UserRole role, Details details) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.details = details;
         this.locked = false;
         this.enabled = true;
     }

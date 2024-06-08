@@ -1,10 +1,12 @@
 package com.it.jobfinder.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -12,14 +14,12 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "admins")
-public class AdminUser {
-
-    @Id
-    private UUID userId;
+public class EmployerDetails extends Details{
 
     private String name;
 
-    private String surname;
+    private String description;
+
 }
