@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -46,5 +47,13 @@ public class AdminService {
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) throw new BadCredentialsException("Incorrect password");
 
         userRepository.delete(user);
+    }
+
+    public List<User> getAll() {
+        return this.userRepository.findByRole(UserRole.ADMIN);
+    }
+
+    public User get(String username) {
+        return this.userRepository.findByRoleAndUsername(UserRole.ADMIN, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 }

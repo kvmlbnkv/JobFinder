@@ -39,4 +39,14 @@ public class EmployeeController {
     public ResponseEntity<List<Skill>> removeSkillFromEmployee(@RequestBody UserSkillDTO dto){
         return new ResponseEntity<>(this.employeeService.removeSkillFromEmployee(dto), HttpStatus.OK);
     }
+
+    @GetMapping("getAll")
+    public ResponseEntity<List<User>> getAllEmployees(){
+        return new ResponseEntity<>(this.employeeService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("get")
+    public ResponseEntity<User> getEmployee(@RequestBody String username){
+        return new ResponseEntity<>(this.employeeService.get(username), HttpStatus.OK);
+    }
 }

@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -47,5 +48,13 @@ public class EmployerService {
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) throw new BadCredentialsException("Incorrect password");
 
         userRepository.delete(user);
+    }
+
+    public List<User> getAll() {
+        return this.userRepository.findByRole(UserRole.EMPLOYER);
+    }
+
+    public User get(String username) {
+        return this.userRepository.findByRoleAndUsername(UserRole.EMPLOYER, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 }

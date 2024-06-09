@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("admin")
@@ -25,6 +27,16 @@ public class AdminController {
     public ResponseEntity<Void> deleteAdmin(@RequestBody LoginDTO dto){
         this.adminService.deleteAdmin(dto);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("getAll")
+    public ResponseEntity<List<User>> getAllAdmins(){
+        return new ResponseEntity<>(this.adminService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("get")
+    public ResponseEntity<User> getAdmin(@RequestBody String username){
+        return new ResponseEntity<>(this.adminService.get(username), HttpStatus.OK);
     }
 
 }

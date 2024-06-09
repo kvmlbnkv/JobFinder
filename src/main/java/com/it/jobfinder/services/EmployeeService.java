@@ -89,4 +89,12 @@ public class EmployeeService {
 
         return userSkills;
     }
+
+    public List<User> getAll() {
+        return this.userRepository.findByRole(UserRole.EMPLOYEE);
+    }
+
+    public User get(String username) {
+        return this.userRepository.findByRoleAndUsername(UserRole.EMPLOYEE, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+    }
 }

@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("employer")
@@ -25,5 +27,15 @@ public class EmployerController {
     public ResponseEntity<Void> deleteEmployer(@RequestBody LoginDTO dto){
         this.employerService.deleteEmployer(dto);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("getAll")
+    public ResponseEntity<List<User>> getAllEmployers(){
+        return new ResponseEntity<>(this.employerService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("get")
+    public ResponseEntity<User> getEmployer(@RequestBody String username){
+        return new ResponseEntity<>(this.employerService.get(username), HttpStatus.OK);
     }
 }
