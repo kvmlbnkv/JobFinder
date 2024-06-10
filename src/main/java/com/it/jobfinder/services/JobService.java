@@ -31,21 +31,38 @@ public class JobService {
     }
 
     public Job addJob(JobDTO dto){
-        User user = userRepository.findByUsername(dto.getUsername())
+        User user = this.userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("There's no user with such name in the database"));
 
         List<Skill> requirements = new ArrayList<>();
         for (SkillDTO skillDTO : dto.getRequirements()){
-            skillRepository.findByName(skillDTO.getSkill()).ifPresent(requirements::add);
+            this.skillRepository.findByName(skillDTO.getSkill()).ifPresent(requirements::add);
         }
 
-        return this.jobRepository.save(new Job(user, dto.getName(), dto.getDescription(), requirements, dto.getDueTo(), dto.isClosed()));
+        return this.jobRepository.save(new Job(user, dto.getName(), dto.getDescription(), requirements, dto.getDueTo(), false));
     }
 
-    public Job updateJobName(UUID id, String name){
-        Job job = jobRepository.findById(id).orElseThrow(() -> new NoSuchJobException("Job not found"));
+    public Job update(UUID id, JobDTO dto){
+        Job job = this.jobRepository.findById(id).orElseThrow(() -> new NoSuchJobException("Job not found"));
 
-        job.setName(name);
+        job.setName(dto.getName());
+        job.setDescription(dto.getDescription());
+
+        List<Skill> requirements = new ArrayList<>();
+        for (SkillDTO skillDTO : dto.getRequirements()){
+            this.skillRepository.findByName(skillDTO.getSkill()).ifPresent(requirements::add);
+        }
+        job.setRequirements(requirements);
+        job.setDueTo(dto.getDueTo());
+
         return jobRepository.save(job);
+    }
+
+    public Job close(UUID id) {
+        Job job = this.jobRepository.getReferenceById(id);
+
+        job.setClosed(true);
+
+        return this.jobRepository.save(job);
     }
 }

@@ -38,4 +38,9 @@ public class EmployerController {
     public ResponseEntity<User> getEmployer(@RequestBody String username){
         return new ResponseEntity<>(this.employerService.get(username), HttpStatus.OK);
     }
+
+    @GetMapping("update")
+    public ResponseEntity<User> updateEmployer(@RequestBody EmployerRegistrationDTO dto){
+        return new ResponseEntity<>(this.employerService.update(dto), HttpStatus.OK);
+    }
 }

@@ -39,4 +39,9 @@ public class AdminController {
         return new ResponseEntity<>(this.adminService.get(username), HttpStatus.OK);
     }
 
+    @PutMapping("update")
+    public ResponseEntity<User> updateAdmin(@RequestBody AdminRegistrationDTO dto){
+        return new ResponseEntity<>(this.adminService.update(dto), HttpStatus.OK);
+    }
+
 }

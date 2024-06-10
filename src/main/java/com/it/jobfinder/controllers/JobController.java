@@ -25,12 +25,17 @@ public class JobController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<Job> addJob(@RequestBody()JobDTO dto){
+    public ResponseEntity<Job> addJob(@RequestBody JobDTO dto){
         return new ResponseEntity<>(this.jobService.addJob(dto), HttpStatus.OK);
     }
 
-    @PutMapping("updateName")
-    public ResponseEntity<Job> updateJobName(@RequestBody()UUID id, String name){
-        return new ResponseEntity<>(this.jobService.updateJobName(id, name), HttpStatus.OK);
+    @PutMapping("update")
+    public ResponseEntity<Job> updateJob(@RequestBody UUID id, JobDTO dto){
+        return new ResponseEntity<>(this.jobService.update(id, dto), HttpStatus.OK);
+    }
+
+    @PutMapping("close")
+    public ResponseEntity<Job> closeJob(@RequestBody UUID id){
+        return new ResponseEntity<>(this.jobService.close(id), HttpStatus.OK);
     }
 }

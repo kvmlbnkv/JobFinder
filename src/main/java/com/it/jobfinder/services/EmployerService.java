@@ -2,6 +2,7 @@ package com.it.jobfinder.services;
 
 import com.it.jobfinder.dtos.EmployerRegistrationDTO;
 import com.it.jobfinder.dtos.LoginDTO;
+import com.it.jobfinder.entities.EmployeeDetails;
 import com.it.jobfinder.entities.EmployerDetails;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.entities.UserRole;
@@ -55,6 +56,19 @@ public class EmployerService {
     }
 
     public User get(String username) {
-        return this.userRepository.findByRoleAndUsername(UserRole.EMPLOYER, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        return null;
+    }
+
+    public User update(EmployerRegistrationDTO dto) {
+        User user = this.userRepository.findByRoleAndUsername(UserRole.EMPLOYER, dto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+
+        user.setEmail(dto.getEmail());
+        user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+        EmployerDetails employerDetails = (EmployerDetails) user.getDetails();
+        employerDetails.setName(dto.getName());
+        employerDetails.setDescription(dto.getDescription());
+
+        return this.userRepository.save(user);
     }
 }

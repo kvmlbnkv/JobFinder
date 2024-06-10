@@ -49,4 +49,9 @@ public class EmployeeController {
     public ResponseEntity<User> getEmployee(@RequestBody String username){
         return new ResponseEntity<>(this.employeeService.get(username), HttpStatus.OK);
     }
+
+    @PutMapping("update")
+    public ResponseEntity<User> updateEmployee(@RequestBody EmployeeRegistrationDTO dto){
+        return new ResponseEntity<>(this.employeeService.update(dto), HttpStatus.OK);
+    }
 }

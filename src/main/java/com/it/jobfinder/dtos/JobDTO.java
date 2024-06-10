@@ -18,6 +18,4 @@ public class JobDTO {
     private List<SkillDTO> requirements;
 
     private LocalDate dueTo;
-
-    private boolean closed;
 }

@@ -3,10 +3,7 @@ package com.it.jobfinder.services;
 import com.it.jobfinder.dtos.EmployeeRegistrationDTO;
 import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.dtos.UserSkillDTO;
-import com.it.jobfinder.entities.EmployeeDetails;
-import com.it.jobfinder.entities.Skill;
-import com.it.jobfinder.entities.User;
-import com.it.jobfinder.entities.UserRole;
+import com.it.jobfinder.entities.*;
 import com.it.jobfinder.exceptions.NoSuchSkillException;
 import com.it.jobfinder.exceptions.SkillAlreadyAcquiredException;
 import com.it.jobfinder.exceptions.SkillNotAcquiredException;
@@ -96,5 +93,19 @@ public class EmployeeService {
 
     public User get(String username) {
         return this.userRepository.findByRoleAndUsername(UserRole.EMPLOYEE, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+    }
+
+    public User update(EmployeeRegistrationDTO dto) {
+        User user = this.userRepository.findByRoleAndUsername(UserRole.EMPLOYEE, dto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+
+        user.setEmail(dto.getEmail());
+        user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+        EmployeeDetails employeeDetails = (EmployeeDetails) user.getDetails();
+        employeeDetails.setName(dto.getName());
+        employeeDetails.setSurname(dto.getSurname());
+        employeeDetails.setDescription(dto.getDescription());
+
+        return this.userRepository.save(user);
     }
 }

@@ -56,4 +56,17 @@ public class AdminService {
     public User get(String username) {
         return this.userRepository.findByRoleAndUsername(UserRole.ADMIN, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
+
+    public User update(AdminRegistrationDTO dto) {
+        User user = this.userRepository.findByRoleAndUsername(UserRole.ADMIN, dto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+
+        user.setEmail(dto.getEmail());
+        user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+        AdminDetails adminDetails = (AdminDetails) user.getDetails();
+        adminDetails.setName(dto.getName());
+        adminDetails.setSurname(dto.getSurname());
+
+        return this.userRepository.save(user);
+    }
 }

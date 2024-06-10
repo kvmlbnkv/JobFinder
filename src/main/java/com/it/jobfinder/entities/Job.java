@@ -20,14 +20,14 @@ public class Job {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @OneToOne
+    @ManyToOne
     private User user;
 
     private String name;
 
     private String description;
 
-    @OneToMany
+    @ManyToMany
     private List<Skill> requirements;
 
     private LocalDate dueTo;
