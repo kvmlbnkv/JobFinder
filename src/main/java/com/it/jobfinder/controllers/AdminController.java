@@ -1,6 +1,7 @@
 package com.it.jobfinder.controllers;
 
 import com.it.jobfinder.dtos.AdminRegistrationDTO;
+import com.it.jobfinder.dtos.AdminUpdateDTO;
 import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.services.AdminService;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class AdminController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<User> updateAdmin(@RequestBody AdminRegistrationDTO dto){
+    public ResponseEntity<User> updateAdmin(@RequestBody AdminUpdateDTO dto){
         return new ResponseEntity<>(this.adminService.update(dto), HttpStatus.OK);
     }
 

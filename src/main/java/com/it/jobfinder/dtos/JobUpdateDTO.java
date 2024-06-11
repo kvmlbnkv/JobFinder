@@ -1,16 +1,15 @@
 package com.it.jobfinder.dtos;
 
-import com.it.jobfinder.entities.Skill;
-import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Data
-public class JobDTO {
+public class JobUpdateDTO {
 
-    private String username;
+    private UUID id;
 
     private String name;
 

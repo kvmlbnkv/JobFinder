@@ -1,6 +1,7 @@
 package com.it.jobfinder.services;
 
 import com.it.jobfinder.dtos.AdminRegistrationDTO;
+import com.it.jobfinder.dtos.AdminUpdateDTO;
 import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.entities.AdminDetails;
 import com.it.jobfinder.entities.User;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -57,10 +59,10 @@ public class AdminService {
         return this.userRepository.findByRoleAndUsername(UserRole.ADMIN, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
-    public User update(AdminRegistrationDTO dto) {
-        User user = this.userRepository.findByRoleAndUsername(UserRole.ADMIN, dto.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+    public User update(AdminUpdateDTO dto) {
+        User user = this.userRepository.getReferenceById(dto.getId());
 
+        user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
         AdminDetails adminDetails = (AdminDetails) user.getDetails();

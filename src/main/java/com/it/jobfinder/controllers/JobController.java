@@ -1,6 +1,8 @@
 package com.it.jobfinder.controllers;
 
+import com.it.jobfinder.dtos.IdDTO;
 import com.it.jobfinder.dtos.JobDTO;
+import com.it.jobfinder.dtos.JobUpdateDTO;
 import com.it.jobfinder.entities.Job;
 import com.it.jobfinder.services.JobService;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +32,12 @@ public class JobController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<Job> updateJob(@RequestBody UUID id, JobDTO dto){
-        return new ResponseEntity<>(this.jobService.update(id, dto), HttpStatus.OK);
+    public ResponseEntity<Job> updateJob(@RequestBody JobUpdateDTO dto){
+        return new ResponseEntity<>(this.jobService.update(dto), HttpStatus.OK);
     }
 
     @PutMapping("close")
-    public ResponseEntity<Job> closeJob(@RequestBody UUID id){
+    public ResponseEntity<Job> closeJob(@RequestBody IdDTO id){
         return new ResponseEntity<>(this.jobService.close(id), HttpStatus.OK);
     }
 }

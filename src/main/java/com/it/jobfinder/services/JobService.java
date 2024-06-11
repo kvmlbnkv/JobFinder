@@ -1,6 +1,8 @@
 package com.it.jobfinder.services;
 
+import com.it.jobfinder.dtos.IdDTO;
 import com.it.jobfinder.dtos.JobDTO;
+import com.it.jobfinder.dtos.JobUpdateDTO;
 import com.it.jobfinder.dtos.SkillDTO;
 import com.it.jobfinder.entities.Job;
 import com.it.jobfinder.entities.Skill;
@@ -42,8 +44,9 @@ public class JobService {
         return this.jobRepository.save(new Job(user, dto.getName(), dto.getDescription(), requirements, dto.getDueTo(), false));
     }
 
-    public Job update(UUID id, JobDTO dto){
-        Job job = this.jobRepository.findById(id).orElseThrow(() -> new NoSuchJobException("Job not found"));
+    public Job update(JobUpdateDTO dto){
+        Job job = this.jobRepository.findById(dto.getId())
+                .orElseThrow(() -> new NoSuchJobException("Job not found"));
 
         job.setName(dto.getName());
         job.setDescription(dto.getDescription());
@@ -58,8 +61,8 @@ public class JobService {
         return jobRepository.save(job);
     }
 
-    public Job close(UUID id) {
-        Job job = this.jobRepository.getReferenceById(id);
+    public Job close(IdDTO id) {
+        Job job = this.jobRepository.getReferenceById(id.getId());
 
         job.setClosed(true);
 

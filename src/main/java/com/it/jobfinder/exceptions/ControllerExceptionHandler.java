@@ -1,5 +1,6 @@
 package com.it.jobfinder.exceptions;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -47,5 +48,10 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(SkillDuplicateException.class)
     public ResponseEntity<String> skillDuplicateHandler(SkillDuplicateException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> entityNotFoundHandler(EntityNotFoundException e){
+        return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
     }
 }

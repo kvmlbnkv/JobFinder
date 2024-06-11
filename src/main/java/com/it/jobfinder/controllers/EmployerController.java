@@ -1,6 +1,7 @@
 package com.it.jobfinder.controllers;
 
 import com.it.jobfinder.dtos.EmployerRegistrationDTO;
+import com.it.jobfinder.dtos.EmployerUpdateDTO;
 import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.services.EmployerService;
@@ -40,7 +41,7 @@ public class EmployerController {
     }
 
     @GetMapping("update")
-    public ResponseEntity<User> updateEmployer(@RequestBody EmployerRegistrationDTO dto){
+    public ResponseEntity<User> updateEmployer(@RequestBody EmployerUpdateDTO dto){
         return new ResponseEntity<>(this.employerService.update(dto), HttpStatus.OK);
     }
 }
