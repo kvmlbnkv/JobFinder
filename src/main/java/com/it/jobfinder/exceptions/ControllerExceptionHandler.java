@@ -54,4 +54,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<String> entityNotFoundHandler(EntityNotFoundException e){
         return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(AlreadyAppliedException.class)
+    public ResponseEntity<String> alreadyAppliedHandler(AlreadyAppliedException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
 }
