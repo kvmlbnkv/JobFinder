@@ -26,12 +26,18 @@ public class SkillController {
     }
 
     @GetMapping("get")
-    public ResponseEntity<Skill> getSkill(@RequestBody()String name){
+    public ResponseEntity<Skill> getSkill(@RequestBody String name){
         return new ResponseEntity<>(this.skillService.getSkill(name), HttpStatus.OK);
     }
 
     @PostMapping("add")
-    public ResponseEntity<Skill> addSkill(@RequestBody()SkillDTO dto){
+    public ResponseEntity<Skill> addSkill(@RequestBody SkillDTO dto){
         return new ResponseEntity<>(this.skillService.addSkill(dto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("delete")
+    public ResponseEntity<Void> deleteSkill(@RequestBody String skill){
+        this.skillService.delete(skill);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
