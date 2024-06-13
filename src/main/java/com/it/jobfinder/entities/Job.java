@@ -1,5 +1,6 @@
 package com.it.jobfinder.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +12,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "jobs")
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
+@Table(name = "jobs")
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
