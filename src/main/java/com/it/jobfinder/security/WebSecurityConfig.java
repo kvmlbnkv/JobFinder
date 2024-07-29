@@ -9,6 +9,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,6 +27,7 @@ import java.util.Collections;
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
+@EnableMethodSecurity //To dla @PreAuthorize
 public class WebSecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -39,10 +42,13 @@ public class WebSecurityConfig {
                 .addFilter(new CustomAuthenticationFilter(this.authenticationManager(authenticationConfiguration), jwtGenerator))
                 .addFilterAfter(new JWTVerificationFilter(jwtVerifier), CustomAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
-                                .anyRequest().permitAll()
-                        /*.requestMatchers( "/user/register", "/user/login", "/login").permitAll()
-                        .requestMatchers("/job/add").hasAuthority(UserRole.EMPLOYER.name())
-                        */)
+                        .requestMatchers("/admin/register").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers( "*/register", "/login").permitAll()
+                        .requestMatchers("/admin/*", "application/getAll").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers("/application/make", "/application/user").hasAuthority(UserRole.EMPLOYEE.name())
+                        //.requestMatchers("/application/user").hasAuthority(UserRole.EMPLOYEE.name())
+                        .requestMatchers("/job/add", "/application/job").hasAuthority(UserRole.EMPLOYER.name())
+                        .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
