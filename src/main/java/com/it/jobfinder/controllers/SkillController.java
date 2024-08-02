@@ -36,8 +36,8 @@ public class SkillController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Void> deleteSkill(@RequestBody String skill){
-        this.skillService.delete(skill);
+    public ResponseEntity<Void> deleteSkill(@RequestBody SkillDTO dto){
+        this.skillService.delete(dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

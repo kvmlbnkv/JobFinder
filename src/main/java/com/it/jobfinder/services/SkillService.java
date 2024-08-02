@@ -36,8 +36,8 @@ public class SkillService {
         return skillRepository.save(new Skill(dto.getSkill()));
     }
 
-    public void delete(String name) {
-        Skill skill = this.skillRepository.findByName(name)
+    public void delete(SkillDTO dto) {
+        Skill skill = this.skillRepository.findByName(dto.getSkill())
                 .orElseThrow(() -> new NoSuchSkillException("No such skill"));
 
         this.skillRepository.delete(skill);

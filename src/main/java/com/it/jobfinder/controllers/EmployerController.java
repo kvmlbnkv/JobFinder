@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -25,8 +26,8 @@ public class EmployerController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Void> deleteEmployer(@RequestBody LoginDTO dto){
-        this.employerService.deleteEmployer(dto);
+    public ResponseEntity<Void> deleteEmployer(@RequestBody LoginDTO dto, Principal principal){
+        this.employerService.deleteEmployer(dto, principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -41,7 +42,7 @@ public class EmployerController {
     }
 
     @GetMapping("update")
-    public ResponseEntity<User> updateEmployer(@RequestBody EmployerUpdateDTO dto){
-        return new ResponseEntity<>(this.employerService.update(dto), HttpStatus.OK);
+    public ResponseEntity<User> updateEmployer(@RequestBody EmployerUpdateDTO dto, Principal principal){
+        return new ResponseEntity<>(this.employerService.update(dto, principal), HttpStatus.OK);
     }
 }

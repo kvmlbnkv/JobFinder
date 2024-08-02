@@ -42,13 +42,21 @@ public class WebSecurityConfig {
                 .addFilter(new CustomAuthenticationFilter(this.authenticationManager(authenticationConfiguration), jwtGenerator))
                 .addFilterAfter(new JWTVerificationFilter(jwtVerifier), CustomAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/register").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers( "*/register", "/login").permitAll()
-                        .requestMatchers("/admin/*", "application/getAll").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers("/application/make", "/application/user").hasAuthority(UserRole.EMPLOYEE.name())
-                        //.requestMatchers("/application/user").hasAuthority(UserRole.EMPLOYEE.name())
-                        .requestMatchers("/job/add", "/application/job").hasAuthority(UserRole.EMPLOYER.name())
-                        .anyRequest().authenticated())
+                        .requestMatchers("/admin/*", "/skill/add", "/skill/delete", "/user/*")
+                            .hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers("/application/make", "/application/user",
+                                "/employee/delete", "/employee/addSkill", "/employee/removeSkill", "/employee/update")
+                            .hasAnyAuthority(UserRole.EMPLOYEE.name(), UserRole.ADMIN.name())
+                        .requestMatchers("/job/add", "/job/update", "/job/close",
+                                "/application/job",
+                                "/employer/delete", "/employer/update")
+                            .hasAnyAuthority(UserRole.EMPLOYER.name(), UserRole.ADMIN.name())
+                        .requestMatchers("/employee/get*", "/employer/get*", "/job/get*", "/skill/get*")
+                            .authenticated()
+                        .requestMatchers( "*/register", "/login")
+                            .permitAll()
+                        .anyRequest().authenticated()
+                        )
                 .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();

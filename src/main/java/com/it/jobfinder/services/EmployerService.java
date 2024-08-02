@@ -7,15 +7,18 @@ import com.it.jobfinder.entities.EmployeeDetails;
 import com.it.jobfinder.entities.EmployerDetails;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.entities.UserRole;
+import com.it.jobfinder.exceptions.IncorrectCredentialsException;
 import com.it.jobfinder.exceptions.UserDuplicateException;
 import com.it.jobfinder.repositories.DetailsRepository;
 import com.it.jobfinder.repositories.UserRepository;
+import com.it.jobfinder.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +29,7 @@ public class EmployerService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final DetailsRepository detailsRepository;
+    private final CustomUserDetailsService userDetailsService;
 
     public User addEmployer(EmployerRegistrationDTO dto) {
         Optional<User> userOptional = userRepository.findByUsername(dto.getUsername());
@@ -43,9 +47,13 @@ public class EmployerService {
         return user;
     }
 
-    public void deleteEmployer(LoginDTO dto) {
+    public void deleteEmployer(LoginDTO dto, Principal principal) {
         User user = this.userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
+        if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(user.getId()))
+            throw new IncorrectCredentialsException("Can't delete this user");
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) throw new BadCredentialsException("Incorrect password");
 
@@ -60,8 +68,12 @@ public class EmployerService {
         return null;
     }
 
-    public User update(EmployerUpdateDTO dto) {
+    public User update(EmployerUpdateDTO dto, Principal principal) {
         User user = this.userRepository.getReferenceById(dto.getId());
+
+        User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
+        if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(dto.getId()))
+            throw new IncorrectCredentialsException("Can't update this user");
 
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());

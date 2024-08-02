@@ -50,11 +50,9 @@ public class UserService{
         return user;
     }
 
-    public void deleteUser(LoginDTO dto) {
-        Optional<User> userOptional = userRepository.findByUsername(dto.getUsername());
+    public void deleteUser(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isEmpty()) throw new UsernameNotFoundException("Incorrect username");
-
-        if (!passwordEncoder.matches(dto.getPassword(), userOptional.get().getPassword())) throw new BadCredentialsException("Incorrect password");
 
         this.userRepository.delete(userOptional.get());
     }

@@ -24,8 +24,8 @@ public class ApplicationController {
     private final ApplicationService applicationService;
 
     @PostMapping("make")
-    public ResponseEntity<Application> makeApplication(@RequestBody ApplicationDTO dto){
-        return new ResponseEntity<>(this.applicationService.makeApplication(dto), HttpStatus.OK);
+    public ResponseEntity<Application> makeApplication(@RequestBody ApplicationDTO dto, Principal principal){
+        return new ResponseEntity<>(this.applicationService.makeApplication(dto, principal), HttpStatus.OK);
     }
 
     @GetMapping("getAll")

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -25,19 +26,19 @@ public class EmployeeController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Void> deleteEmployee(@RequestBody LoginDTO dto){
-        this.employeeService.deleteEmployee(dto);
+    public ResponseEntity<Void> deleteEmployee(@RequestBody LoginDTO dto, Principal principal){
+        this.employeeService.deleteEmployee(dto, principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("addSkill")
-    public ResponseEntity<List<Skill>> addSkillToEmployee(@RequestBody UserSkillDTO dto){
-        return new ResponseEntity<>(this.employeeService.addSkillToUser(dto), HttpStatus.OK);
+    public ResponseEntity<List<Skill>> addSkillToEmployee(@RequestBody UserSkillDTO dto, Principal principal){
+        return new ResponseEntity<>(this.employeeService.addSkillToUser(dto, principal), HttpStatus.OK);
     }
 
     @DeleteMapping("removeSkill")
-    public ResponseEntity<List<Skill>> removeSkillFromEmployee(@RequestBody UserSkillDTO dto){
-        return new ResponseEntity<>(this.employeeService.removeSkillFromEmployee(dto), HttpStatus.OK);
+    public ResponseEntity<List<Skill>> removeSkillFromEmployee(@RequestBody UserSkillDTO dto, Principal principal){
+        return new ResponseEntity<>(this.employeeService.removeSkillFromEmployee(dto, principal), HttpStatus.OK);
     }
 
     @GetMapping("getAll")
@@ -51,7 +52,7 @@ public class EmployeeController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<User> updateEmployee(@RequestBody EmployeeUpdateDTO dto){
-        return new ResponseEntity<>(this.employeeService.update(dto), HttpStatus.OK);
+    public ResponseEntity<User> updateEmployee(@RequestBody EmployeeUpdateDTO dto, Principal principal){
+        return new ResponseEntity<>(this.employeeService.update(dto, principal), HttpStatus.OK);
     }
 }

@@ -34,17 +34,18 @@ public class UserController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Void> deleteUser(@RequestBody()LoginDTO dto){
-        this.userService.deleteUser(dto);
+    public ResponseEntity<Void> deleteUser(@RequestBody()String username){
+        this.userService.deleteUser(username);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /*
     @PostMapping("register")
     public ResponseEntity<User> registerUser(@RequestBody()RegistrationDTO dto){
         return new ResponseEntity<>(this.userService.addUser(dto), HttpStatus.CREATED);
     }
 
-    /*
+
     @PostMapping("addSkill")
     public ResponseEntity<List<Skill>> addSkillToUser(@RequestBody()UserSkillDTO dto){
         return new ResponseEntity<>(this.userService.addSkillToUser(dto), HttpStatus.OK);

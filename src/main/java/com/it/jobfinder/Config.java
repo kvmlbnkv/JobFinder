@@ -24,16 +24,25 @@ public class Config {
     @Bean
     CommandLineRunner cml(DetailsRepository detailsRepository, UserRepository userRepository, SkillRepository skillRepository, JobRepository jobRepository){
         return args -> {
-            AdminDetails details = new AdminDetails("test", "test");
-            detailsRepository.save(details);
+            AdminDetails adminDetails = new AdminDetails("test", "test");
+            detailsRepository.save(adminDetails);
+            User adminUser = new User("admin", passwordEncoder.encode( "admin"), "test@test.com", UserRole.ADMIN, adminDetails);
+            userRepository.save(adminUser);
 
-            User test = new User("test", passwordEncoder.encode( "test"), "test@test.com", UserRole.ADMIN, details);
-            userRepository.save(test);
+            EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", List.of());
+            detailsRepository.save(employeeDetails);
+            User employeeUser = new User("employee", passwordEncoder.encode("password"), "employee@test.com", UserRole.EMPLOYEE, employeeDetails);
+            userRepository.save(employeeUser);
+
+            EmployerDetails employerDetails = new EmployerDetails("Employer", "");
+            detailsRepository.save(employerDetails);
+            User employerUser = new User("employer", passwordEncoder.encode("password"), "employer@test.com", UserRole.EMPLOYER, employerDetails);
+            userRepository.save(employerUser);
 
             Skill java = new Skill("Java");
             skillRepository.save(java);
 
-            Job job = new Job(test, "test job", "this is a test job", new ArrayList<>(List.of(java)), LocalDate.of(2024, 7, 5), false);
+            Job job = new Job(adminUser, "test job", "this is a test job", List.of(java), LocalDate.of(2025, 7, 5), false);
             jobRepository.save(job);
         };
     }

@@ -5,19 +5,18 @@ import com.it.jobfinder.dtos.EmployeeUpdateDTO;
 import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.dtos.UserSkillDTO;
 import com.it.jobfinder.entities.*;
-import com.it.jobfinder.exceptions.NoSuchSkillException;
-import com.it.jobfinder.exceptions.SkillAlreadyAcquiredException;
-import com.it.jobfinder.exceptions.SkillNotAcquiredException;
-import com.it.jobfinder.exceptions.UserDuplicateException;
+import com.it.jobfinder.exceptions.*;
 import com.it.jobfinder.repositories.DetailsRepository;
 import com.it.jobfinder.repositories.SkillRepository;
 import com.it.jobfinder.repositories.UserRepository;
+import com.it.jobfinder.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +29,7 @@ public class EmployeeService {
     private final PasswordEncoder passwordEncoder;
     private final DetailsRepository detailsRepository;
     private final SkillRepository skillRepository;
+    private final CustomUserDetailsService userDetailsService;
 
     public User addEmployee(EmployeeRegistrationDTO dto) {
         Optional<User> userOptional = userRepository.findByUsername(dto.getUsername());
@@ -47,18 +47,28 @@ public class EmployeeService {
         return user;
     }
 
-    public void deleteEmployee(LoginDTO dto) {
+    public void deleteEmployee(LoginDTO dto, Principal principal) {
         User user = this.userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
+
+        if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(user.getId()))
+            throw new IncorrectCredentialsException("Can't delete this user");
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) throw new BadCredentialsException("Incorrect password");
 
         userRepository.delete(user);
     }
 
-    public List<Skill> addSkillToUser(UserSkillDTO dto) {
+    public List<Skill> addSkillToUser(UserSkillDTO dto, Principal principal) {
         User user = this.userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
+
+        if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(user.getId()))
+            throw new IncorrectCredentialsException("Can't update this user");
 
         Skill skill = this.skillRepository.findByName(dto.getSkill())
                 .orElseThrow(() -> new NoSuchSkillException("No such skill"));
@@ -72,9 +82,14 @@ public class EmployeeService {
         return userSkills;
     }
 
-    public List<Skill> removeSkillFromEmployee(UserSkillDTO dto){
+    public List<Skill> removeSkillFromEmployee(UserSkillDTO dto, Principal principal){
         User user = this.userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
+
+        if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(user.getId()))
+            throw new IncorrectCredentialsException("Can't update this user");
 
         Skill skill = this.skillRepository.findByName(dto.getSkill())
                 .orElseThrow(() -> new NoSuchSkillException("No such skill"));
@@ -96,8 +111,13 @@ public class EmployeeService {
         return this.userRepository.findByRoleAndUsername(UserRole.EMPLOYEE, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
-    public User update(EmployeeUpdateDTO dto) {
+    public User update(EmployeeUpdateDTO dto, Principal principal) {
         User user = this.userRepository.getReferenceById(dto.getId());
+
+        User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
+
+        if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(user.getId()))
+            throw new IncorrectCredentialsException("Can't update this user");
 
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());

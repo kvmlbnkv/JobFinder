@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,18 +27,23 @@ public class JobController {
         return new ResponseEntity<>(this.jobService.getAllJobs(), HttpStatus.OK);
     }
 
+    @GetMapping("get")
+    public ResponseEntity<Job> getJob(@RequestBody IdDTO dto){
+        return new ResponseEntity<>(this.jobService.getJob(dto), HttpStatus.OK);
+    }
+
     @PostMapping("add")
-    public ResponseEntity<Job> addJob(@RequestBody JobDTO dto){
-        return new ResponseEntity<>(this.jobService.addJob(dto), HttpStatus.OK);
+    public ResponseEntity<Job> addJob(@RequestBody JobDTO dto, Principal principal){
+        return new ResponseEntity<>(this.jobService.addJob(dto, principal), HttpStatus.OK);
     }
 
     @PutMapping("update")
-    public ResponseEntity<Job> updateJob(@RequestBody JobUpdateDTO dto){
-        return new ResponseEntity<>(this.jobService.update(dto), HttpStatus.OK);
+    public ResponseEntity<Job> updateJob(@RequestBody JobUpdateDTO dto, Principal principal){
+        return new ResponseEntity<>(this.jobService.update(dto, principal), HttpStatus.OK);
     }
 
     @PutMapping("close")
-    public ResponseEntity<Job> closeJob(@RequestBody IdDTO id){
-        return new ResponseEntity<>(this.jobService.close(id), HttpStatus.OK);
+    public ResponseEntity<Job> closeJob(@RequestBody IdDTO id, Principal principal){
+        return new ResponseEntity<>(this.jobService.close(id, principal), HttpStatus.OK);
     }
 }
