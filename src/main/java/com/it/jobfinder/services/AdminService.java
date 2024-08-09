@@ -62,12 +62,24 @@ public class AdminService {
     public User update(AdminUpdateDTO dto) {
         User user = this.userRepository.getReferenceById(dto.getId());
 
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+        if (dto.getUsername() != null){
+            Optional<User> userOptional = userRepository.findByUsername(dto.getUsername());
+            if (userOptional.isPresent()) throw new UserDuplicateException("Username taken");
+            else user.setUsername(dto.getUsername());
+        }
+
+
+        if (dto.getEmail() != null){
+            Optional<User> email = userRepository.findByEmail(dto.getEmail());
+            if (email.isPresent()) throw new UserDuplicateException("Email taken");
+            user.setEmail(dto.getEmail());
+        }
+
+        if (dto.getPassword() != null) user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+
         AdminDetails adminDetails = (AdminDetails) user.getDetails();
-        adminDetails.setName(dto.getName());
-        adminDetails.setSurname(dto.getSurname());
+        if (dto.getName() != null) adminDetails.setName(dto.getName());
+        if (dto.getSurname() != null) adminDetails.setSurname(dto.getSurname());
 
         return this.userRepository.save(user);
     }
