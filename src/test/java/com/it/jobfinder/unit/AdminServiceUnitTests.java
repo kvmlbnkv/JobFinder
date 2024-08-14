@@ -52,7 +52,6 @@ class AdminServiceUnitTests {
         AdminDetails adminDetails = new AdminDetails("Ad", "Min");
         User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
 
-        when(userRepository.save(adminUser)).thenReturn(adminUser);
         when(passwordEncoder.encode("admin")).thenReturn("encodedAdmin");
         when(passwordEncoder.matches("admin", "encodedAdmin")).thenReturn(true);
 
