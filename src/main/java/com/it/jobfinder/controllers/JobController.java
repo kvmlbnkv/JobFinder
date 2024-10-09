@@ -1,6 +1,5 @@
 package com.it.jobfinder.controllers;
 
-import com.it.jobfinder.dtos.IdDTO;
 import com.it.jobfinder.dtos.JobDTO;
 import com.it.jobfinder.dtos.JobUpdateDTO;
 import com.it.jobfinder.entities.Job;
@@ -28,8 +27,8 @@ public class JobController {
     }
 
     @GetMapping("get")
-    public ResponseEntity<Job> getJob(@RequestBody IdDTO dto){
-        return new ResponseEntity<>(this.jobService.getJob(dto), HttpStatus.OK);
+    public ResponseEntity<Job> getJob(@RequestBody String id){
+        return new ResponseEntity<>(this.jobService.getJob(id), HttpStatus.OK);
     }
 
     @PostMapping("add")
@@ -43,7 +42,7 @@ public class JobController {
     }
 
     @PutMapping("close")
-    public ResponseEntity<Job> closeJob(@RequestBody IdDTO id, Principal principal){
+    public ResponseEntity<Job> closeJob(@RequestBody String id, Principal principal){
         return new ResponseEntity<>(this.jobService.close(id, principal), HttpStatus.OK);
     }
 }

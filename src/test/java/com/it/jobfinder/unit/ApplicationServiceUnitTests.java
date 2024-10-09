@@ -1,7 +1,6 @@
 package com.it.jobfinder.unit;
 
 import com.it.jobfinder.dtos.ApplicationDTO;
-import com.it.jobfinder.dtos.IdDTO;
 import com.it.jobfinder.entities.*;
 import com.it.jobfinder.exceptions.AlreadyAppliedException;
 import com.it.jobfinder.exceptions.IncorrectCredentialsException;
@@ -329,11 +328,7 @@ public class ApplicationServiceUnitTests {
         when(jobRepository.getReferenceById(jobId)).thenReturn(job);
         when(applicationRepository.findByJob(job)).thenReturn(List.of(application1, application2));
 
-        IdDTO dto = IdDTO.builder()
-                .id(jobId)
-                .build();
-
-        List<Application> applications = applicationService.getJobApplications(dto, principal);
+        List<Application> applications = applicationService.getJobApplications(jobId.toString(), principal);
 
         Assertions.assertEquals(2, applications.size());
 
@@ -382,11 +377,7 @@ public class ApplicationServiceUnitTests {
         when(jobRepository.getReferenceById(jobId)).thenReturn(job);
         when(applicationRepository.findByJob(job)).thenReturn(List.of(application1, application2));
 
-        IdDTO dto = IdDTO.builder()
-                .id(jobId)
-                .build();
-
-        List<Application> applications = applicationService.getJobApplications(dto, principal);
+        List<Application> applications = applicationService.getJobApplications(jobId.toString(), principal);
 
         Assertions.assertEquals(2, applications.size());
 
@@ -435,11 +426,7 @@ public class ApplicationServiceUnitTests {
         when(jobRepository.getReferenceById(jobId)).thenReturn(job);
         when(applicationRepository.findByJob(job)).thenReturn(List.of(application1, application2));
 
-        IdDTO dto = IdDTO.builder()
-                .id(jobId)
-                .build();
-
-        Assertions.assertThrows(IncorrectCredentialsException.class, () -> applicationService.getJobApplications(dto, principal));
+        Assertions.assertThrows(IncorrectCredentialsException.class, () -> applicationService.getJobApplications(jobId.toString(), principal));
     }
 
     @Test
@@ -474,14 +461,10 @@ public class ApplicationServiceUnitTests {
 
         when(principal.getName()).thenReturn("employee");
         when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
-        when(userRepository.getReferenceById(employeeId)).thenReturn(employeeUser);
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
         when(applicationRepository.findByUser(employeeUser)).thenReturn(List.of(application1, application2));
 
-        IdDTO dto = IdDTO.builder()
-                .id(employeeId)
-                .build();
-
-        List<Application> applications = applicationService.getUserApplications(dto, principal);
+        List<Application> applications = applicationService.getUserApplications("employee", principal);
 
         Assertions.assertEquals(2, applications.size());
 
@@ -526,14 +509,10 @@ public class ApplicationServiceUnitTests {
 
         when(principal.getName()).thenReturn("admin");
         when(userDetailsService.loadUserByUsername("admin")).thenReturn(adminUser);
-        when(userRepository.getReferenceById(employeeId)).thenReturn(employeeUser);
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
         when(applicationRepository.findByUser(employeeUser)).thenReturn(List.of(application1, application2));
 
-        IdDTO dto = IdDTO.builder()
-                .id(employeeId)
-                .build();
-
-        List<Application> applications = applicationService.getUserApplications(dto, principal);
+        List<Application> applications = applicationService.getUserApplications("employee", principal);
 
         Assertions.assertEquals(2, applications.size());
 
@@ -581,10 +560,6 @@ public class ApplicationServiceUnitTests {
         when(userRepository.getReferenceById(employee1Id)).thenReturn(employee1User);
         when(applicationRepository.findByUser(employee1User)).thenReturn(List.of(application1, application2));
 
-        IdDTO dto = IdDTO.builder()
-                .id(employee1Id)
-                .build();
-
-        Assertions.assertThrows(IncorrectCredentialsException.class, () -> applicationService.getUserApplications(dto, principal));
+        Assertions.assertThrows(IncorrectCredentialsException.class, () -> applicationService.getUserApplications("employee", principal));
     }
 }

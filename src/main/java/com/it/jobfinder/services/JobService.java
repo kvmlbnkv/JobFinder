@@ -1,6 +1,5 @@
 package com.it.jobfinder.services;
 
-import com.it.jobfinder.dtos.IdDTO;
 import com.it.jobfinder.dtos.JobDTO;
 import com.it.jobfinder.dtos.JobUpdateDTO;
 import com.it.jobfinder.dtos.SkillDTO;
@@ -76,8 +75,8 @@ public class JobService {
         return jobRepository.save(job);
     }
 
-    public Job close(IdDTO id, Principal principal) {
-        Job job = this.jobRepository.getReferenceById(id.getId());
+    public Job close(String id, Principal principal) {
+        Job job = this.jobRepository.getReferenceById(UUID.fromString(id));
 
         User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
 
@@ -89,8 +88,8 @@ public class JobService {
         return this.jobRepository.save(job);
     }
 
-    public Job getJob(IdDTO dto) {
-        return this.jobRepository.findById(dto.getId())
+    public Job getJob(String id) {
+        return this.jobRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new NoSuchJobException("Job not found"));
     }
 }

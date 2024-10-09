@@ -1,7 +1,6 @@
 package com.it.jobfinder.controllers;
 
 import com.it.jobfinder.dtos.ApplicationDTO;
-import com.it.jobfinder.dtos.IdDTO;
 import com.it.jobfinder.entities.Application;
 import com.it.jobfinder.entities.User;
 import com.it.jobfinder.services.ApplicationService;
@@ -34,12 +33,12 @@ public class ApplicationController {
     }
 
     @GetMapping("job")
-    public ResponseEntity<List<Application>> getJobApplications(@RequestBody IdDTO dto, Principal principal){
-        return new ResponseEntity<>(this.applicationService.getJobApplications(dto, principal), HttpStatus.OK);
+    public ResponseEntity<List<Application>> getJobApplications(@RequestBody String id, Principal principal){
+        return new ResponseEntity<>(this.applicationService.getJobApplications(id, principal), HttpStatus.OK);
     }
 
     @GetMapping("user")
-    public ResponseEntity<List<Application>> getUserApplications(@RequestBody IdDTO dto, Principal principal){
-        return new ResponseEntity<>(this.applicationService.getUserApplications(dto, principal), HttpStatus.OK);
+    public ResponseEntity<List<Application>> getUserApplications(@RequestBody String username, Principal principal){
+        return new ResponseEntity<>(this.applicationService.getUserApplications(username, principal), HttpStatus.OK);
     }
 }

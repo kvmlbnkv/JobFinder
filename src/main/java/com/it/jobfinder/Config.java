@@ -42,7 +42,7 @@ public class Config {
             Skill java = new Skill("Java");
             skillRepository.save(java);
 
-            Job job = new Job(adminUser, "test job", "this is a test job", List.of(java), LocalDate.of(2025, 7, 5), false);
+            Job job = new Job(employerUser, "test job", "this is a test job", List.of(java), LocalDate.of(2025, 7, 5), false);
             jobRepository.save(job);
         };
     }
