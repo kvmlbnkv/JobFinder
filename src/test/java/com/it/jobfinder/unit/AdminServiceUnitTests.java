@@ -42,6 +42,20 @@ class AdminServiceUnitTests {
     @InjectMocks
     private AdminService adminService;
 
+
+    UUID uuid = UUID.randomUUID();
+
+    AdminDetails adminDetails = new AdminDetails("Ad", "Min");
+    User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
+
+    AdminDetails adminDetails1 = new AdminDetails("Ad", "Min");
+    User adminUser1 = new User("admin1", "admin", "admin1@admin.com", UserRole.ADMIN, adminDetails1);
+
+    AdminDetails adminDetails2 = new AdminDetails("Add", "Minn");
+    User adminUser2 = new User("admin2", "adminn", "admin2@admin.com", UserRole.ADMIN, adminDetails2);
+
+
+
     @BeforeEach
     void beforeEach(){
         MockitoAnnotations.openMocks(this);
@@ -49,9 +63,6 @@ class AdminServiceUnitTests {
 
     @Test
     void addAdminTest(){
-        AdminDetails adminDetails = new AdminDetails("Ad", "Min");
-        User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
-
         when(passwordEncoder.encode("admin")).thenReturn("encodedAdmin");
         when(passwordEncoder.matches("admin", "encodedAdmin")).thenReturn(true);
 
@@ -72,9 +83,6 @@ class AdminServiceUnitTests {
 
     @Test
     void addAdminUsernameTakenTest(){
-        AdminDetails adminDetails = new AdminDetails("Ad", "Min");
-        User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
-
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(adminUser));
 
         AdminRegistrationDTO dto = AdminRegistrationDTO.builder()
@@ -86,9 +94,6 @@ class AdminServiceUnitTests {
 
     @Test
     void addAdminEmailTakenTest(){
-        AdminDetails adminDetails = new AdminDetails("Ad", "Min");
-        User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
-
         when(userRepository.findByEmail("admin@admin.com")).thenReturn(Optional.of(adminUser));
 
         AdminRegistrationDTO dto = AdminRegistrationDTO.builder()
@@ -100,9 +105,6 @@ class AdminServiceUnitTests {
 
     @Test
     void deleteAdminTest(){
-        AdminDetails adminDetails = new AdminDetails("Ad", "Min");
-        User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
-
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(adminUser));
         when(passwordEncoder.matches("admin", "admin")).thenReturn(true);
 
@@ -128,9 +130,6 @@ class AdminServiceUnitTests {
 
     @Test
     void deleteAdminBadCredentialsTest(){
-        AdminDetails adminDetails = new AdminDetails("Ad", "Min");
-        User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
-
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(adminUser));
         when(passwordEncoder.matches("admin", "admin")).thenReturn(false);
 
@@ -143,12 +142,6 @@ class AdminServiceUnitTests {
 
     @Test
     void getAllTest(){
-        AdminDetails adminDetails1 = new AdminDetails("Ad", "Min");
-        User adminUser1 = new User("admin1", "admin", "admin1@admin.com", UserRole.ADMIN, adminDetails1);
-
-        AdminDetails adminDetails2 = new AdminDetails("Ad", "Min");
-        User adminUser2 = new User("admin2", "admin", "admin2@admin.com", UserRole.ADMIN, adminDetails2);
-
         when(userRepository.findByRole(UserRole.ADMIN)).thenReturn(List.of(adminUser1, adminUser2));
 
         List<User> admins = adminService.getAll();
@@ -172,9 +165,6 @@ class AdminServiceUnitTests {
 
     @Test
     void getTest(){
-        AdminDetails adminDetails = new AdminDetails("Ad", "Min");
-        User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
-
         when(userRepository.findByRoleAndUsername(UserRole.ADMIN, "admin")).thenReturn(Optional.of(adminUser));
 
         User receivedAdmin = adminService.get("admin");
@@ -196,11 +186,6 @@ class AdminServiceUnitTests {
 
     @Test
     void updateTest() {
-        AdminDetails adminDetails = new AdminDetails("Ad", "Min");
-        User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
-
-        UUID uuid = UUID.randomUUID();
-
         when(userRepository.getReferenceById(uuid)).thenReturn(adminUser);
         when(passwordEncoder.encode("admin1")).thenReturn("encodedAdmin1");
         when(passwordEncoder.matches("admin1", "encodedAdmin1")).thenReturn(true);
@@ -222,11 +207,6 @@ class AdminServiceUnitTests {
 
     @Test
     void updateNotAllValuesTest(){
-        AdminDetails adminDetails = new AdminDetails("Ad", "Min");
-        User adminUser = new User("admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
-
-        UUID uuid = UUID.randomUUID();
-
         when(userRepository.getReferenceById(uuid)).thenReturn(adminUser);
         when(userRepository.save(adminUser)).thenReturn(adminUser);
 

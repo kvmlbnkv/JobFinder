@@ -391,4 +391,17 @@ public class EmployeeServiceUnitTests {
         Assertions.assertEquals(dto.getSurname(), ((EmployeeDetails) updatedUser.getDetails()).getSurname());
         Assertions.assertEquals("", ((EmployeeDetails) updatedUser.getDetails()).getDescription());
     }
+
+    @Test
+    void updateIncorrectCredentialsTest(){
+        when(userRepository.getReferenceById(employeeId)).thenReturn(employeeUser);
+        when(principal.getName()).thenReturn("Oemployee");
+        when(userDetailsService.loadUserByUsername("Oemployee")).thenReturn(otherEmployeeUser);
+
+        EmployeeUpdateDTO dto = EmployeeUpdateDTO.builder()
+                .id(employeeId).name("Emm").surname("Ployeee").username("nemployee").email("nemployee@mail.com").description("hello").password("newPassword")
+                .build();
+
+        Assertions.assertThrows(IncorrectCredentialsException.class, () -> employeeService.update(dto, principal));
+    }
 }
