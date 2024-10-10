@@ -61,7 +61,7 @@ public class EmployeeService {
         userRepository.delete(user);
     }
 
-    public List<Skill> addSkillToUser(UserSkillDTO dto, Principal principal) {
+    public List<Skill> addSkillToEmployee(UserSkillDTO dto, Principal principal) {
         User user = this.userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -119,13 +119,24 @@ public class EmployeeService {
         if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(user.getId()))
             throw new IncorrectCredentialsException("Can't update this user");
 
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+        if (dto.getUsername() != null){
+            Optional<User> userOptional = userRepository.findByUsername(dto.getUsername());
+            if (userOptional.isPresent()) throw new UserDuplicateException("Username taken");
+            else user.setUsername(dto.getUsername());
+        }
+
+        if (dto.getEmail() != null){
+            Optional<User> email = userRepository.findByEmail(dto.getEmail());
+            if (email.isPresent()) throw new UserDuplicateException("Email taken");
+            user.setEmail(dto.getEmail());
+        }
+
+        if (dto.getPassword() != null) user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+
         EmployeeDetails employeeDetails = (EmployeeDetails) user.getDetails();
-        employeeDetails.setName(dto.getName());
-        employeeDetails.setSurname(dto.getSurname());
-        employeeDetails.setDescription(dto.getDescription());
+        if (dto.getName() != null) employeeDetails.setName(dto.getName());
+        if (dto.getSurname() != null) employeeDetails.setSurname(dto.getSurname());
+        if (dto.getDescription() != null) employeeDetails.setDescription(dto.getDescription());
 
         return this.userRepository.save(user);
     }

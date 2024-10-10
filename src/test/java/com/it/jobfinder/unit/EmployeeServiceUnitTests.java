@@ -1,11 +1,11 @@
 package com.it.jobfinder.unit;
 
 import com.it.jobfinder.dtos.EmployeeRegistrationDTO;
+import com.it.jobfinder.dtos.EmployeeUpdateDTO;
 import com.it.jobfinder.dtos.LoginDTO;
 import com.it.jobfinder.dtos.UserSkillDTO;
 import com.it.jobfinder.entities.*;
-import com.it.jobfinder.exceptions.IncorrectCredentialsException;
-import com.it.jobfinder.exceptions.UserDuplicateException;
+import com.it.jobfinder.exceptions.*;
 import com.it.jobfinder.repositories.DetailsRepository;
 import com.it.jobfinder.repositories.SkillRepository;
 import com.it.jobfinder.repositories.UserRepository;
@@ -53,6 +53,21 @@ public class EmployeeServiceUnitTests {
     @InjectMocks
     EmployeeService employeeService;
 
+
+
+    UUID employeeId = UUID.randomUUID();
+    UUID otherEmployeeId = UUID.randomUUID();
+
+    EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", new ArrayList<>());
+    User employeeUser = new User(employeeId, "employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
+
+    EmployeeDetails otherEmployeeDetails = new EmployeeDetails("Emm", "Ploye", "", new ArrayList<>());
+    User otherEmployeeUser = new User(otherEmployeeId, "Oemployee", "password", "Oemployee@mail.com", UserRole.EMPLOYEE, otherEmployeeDetails);
+
+    Skill skill = new Skill("skill");
+
+
+
     @BeforeEach
     void beforeEach(){
         MockitoAnnotations.openMocks(this);
@@ -60,9 +75,6 @@ public class EmployeeServiceUnitTests {
 
     @Test
     void addEmployeeTest(){
-        EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", List.of());
-        User employeeUser = new User("employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
-
         EmployeeRegistrationDTO dto = EmployeeRegistrationDTO.builder()
                 .name("Em").surname("Ployee").username("employee").password("password").email("employee@mail.com").description("")
                 .build();
@@ -87,9 +99,6 @@ public class EmployeeServiceUnitTests {
 
     @Test
     void addEmployeeUsernameTakenTest(){
-        EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", List.of());
-        User employeeUser = new User("employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
-
         EmployeeRegistrationDTO dto = EmployeeRegistrationDTO.builder()
                 .name("Em").surname("Ployee").username("employee").password("password").email("employee@mail.com").description("")
                 .build();
@@ -101,9 +110,6 @@ public class EmployeeServiceUnitTests {
 
     @Test
     void addEmployeeEmailTakenTest(){
-        EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", List.of());
-        User employeeUser = new User("employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
-
         EmployeeRegistrationDTO dto = EmployeeRegistrationDTO.builder()
                 .name("Em").surname("Ployee").username("employee").password("password").email("employee@mail.com").description("")
                 .build();
@@ -116,12 +122,6 @@ public class EmployeeServiceUnitTests {
 
     @Test
     void deleteEmployeeTest(){
-        UUID employeeId = UUID.randomUUID();
-
-        EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", List.of());
-        User employeeUser = new User("employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
-        employeeUser.setId(employeeId);
-
         when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
         when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
         when(principal.getName()).thenReturn("employee");
@@ -149,17 +149,6 @@ public class EmployeeServiceUnitTests {
 
     @Test
     void deleteEmployeeIncorrectCredentialsTest(){
-        UUID employeeId = UUID.randomUUID();
-        UUID otherEmployeeId = UUID.randomUUID();
-
-        EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", List.of());
-        User employeeUser = new User("employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
-        employeeUser.setId(employeeId);
-
-        EmployeeDetails otherEmployeeDetails = new EmployeeDetails("Emm", "Ploye", "", List.of());
-        User otherEmployeeUser = new User("Oemployee", "password", "Oemployee@mail.com", UserRole.EMPLOYEE, otherEmployeeDetails);
-        otherEmployeeUser.setId(otherEmployeeId);
-
         when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
         when(principal.getName()).thenReturn("Oemployee");
         when(userDetailsService.loadUserByUsername("Oemployee")).thenReturn(otherEmployeeUser);
@@ -173,12 +162,6 @@ public class EmployeeServiceUnitTests {
 
     @Test
     void deleteEmployeeBadCredentialsTest(){
-        UUID employeeId = UUID.randomUUID();
-
-        EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", List.of());
-        User employeeUser = new User("employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
-        employeeUser.setId(employeeId);
-
         when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
         when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
         when(principal.getName()).thenReturn("employee");
@@ -192,13 +175,63 @@ public class EmployeeServiceUnitTests {
     }
 
     @Test
-    void addSkillToUserTest(){
-        UUID employeeId = UUID.randomUUID();
-        EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", new ArrayList<>());
-        User employeeUser = new User("employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
-        employeeUser.setId(employeeId);
+    void addSkillToEmployeeTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
+        when(principal.getName()).thenReturn("employee");
+        when(skillRepository.findByName("skill")).thenReturn(Optional.of(skill));
 
-        Skill skill = new Skill("skill");
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        List<Skill> updatedList = employeeService.addSkillToEmployee(dto, principal);
+
+        verify(userRepository).save(employeeUser);
+        Assertions.assertIterableEquals(List.of(skill), updatedList);
+    }
+
+    @Test
+    void addSkillToEmployeeUsernameNotFoundTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.empty());
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        Assertions.assertThrows(UsernameNotFoundException.class, () -> employeeService.addSkillToEmployee(dto, principal));
+    }
+
+    @Test
+    void addSkillToEmployeeIncorrectCredentialsTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(principal.getName()).thenReturn("Oemployee");
+        when(userDetailsService.loadUserByUsername("Oemployee")).thenReturn(otherEmployeeUser);
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        Assertions.assertThrows(IncorrectCredentialsException.class, () -> employeeService.addSkillToEmployee(dto, principal));
+    }
+
+    @Test
+    void addSkillToEmployeeNoSuchSkillTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
+        when(principal.getName()).thenReturn("employee");
+        when(skillRepository.findByName("skill")).thenReturn(Optional.empty());
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        Assertions.assertThrows(NoSuchSkillException.class, () -> employeeService.addSkillToEmployee(dto, principal));
+    }
+
+    @Test
+    void addSkillToEmployeeSkillAlreadyAcquiredTest(){
+        ((EmployeeDetails) employeeUser.getDetails()).getSkills().add(skill);
 
         when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
         when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
@@ -209,8 +242,153 @@ public class EmployeeServiceUnitTests {
                 .skill("skill").username("employee")
                 .build();
 
-        List<Skill> updatedList = employeeService.addSkillToUser(dto, principal);
+        Assertions.assertThrows(SkillAlreadyAcquiredException.class, () -> employeeService.addSkillToEmployee(dto, principal));
+    }
 
-        Assertions.assertIterableEquals(List.of(skill), updatedList);
+    @Test
+    void removeSkillFromEmployeeTest(){
+        ((EmployeeDetails) employeeUser.getDetails()).getSkills().add(skill);
+
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
+        when(principal.getName()).thenReturn("employee");
+        when(skillRepository.findByName("skill")).thenReturn(Optional.of(skill));
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        List<Skill> updatedList = employeeService.removeSkillFromEmployee(dto, principal);
+
+        verify(userRepository).save(employeeUser);
+        Assertions.assertIterableEquals(List.of(), updatedList);
+    }
+
+    @Test
+    void removeSkillFromEmployeeUsernameNotFoundTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.empty());
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        Assertions.assertThrows(UsernameNotFoundException.class, () -> employeeService.removeSkillFromEmployee(dto, principal));
+    }
+
+    @Test
+    void removeSkillFromEmployeeIncorrectCredentialsTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(principal.getName()).thenReturn("Oemployee");
+        when(userDetailsService.loadUserByUsername("Oemployee")).thenReturn(otherEmployeeUser);
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        Assertions.assertThrows(IncorrectCredentialsException.class, () -> employeeService.removeSkillFromEmployee(dto, principal));
+    }
+
+    @Test
+    void removeSkillFromEmployeeNoSuchSkillTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
+        when(principal.getName()).thenReturn("employee");
+        when(skillRepository.findByName("skill")).thenReturn(Optional.empty());
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        Assertions.assertThrows(NoSuchSkillException.class, () -> employeeService.removeSkillFromEmployee(dto, principal));
+    }
+
+    @Test
+    void removeSkillFromEmployeeSkillNotAcquiredTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
+        when(principal.getName()).thenReturn("employee");
+        when(skillRepository.findByName("skill")).thenReturn(Optional.of(skill));
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        Assertions.assertThrows(SkillNotAcquiredException.class, () -> employeeService.removeSkillFromEmployee(dto, principal));
+    }
+
+    @Test
+    void getAllTest(){
+        when(userRepository.findByRole(UserRole.EMPLOYEE)).thenReturn(List.of(employeeUser, otherEmployeeUser));
+
+        Assertions.assertIterableEquals(List.of(employeeUser, otherEmployeeUser), employeeService.getAll());
+    }
+
+    @Test
+    void getTest(){
+        when(userRepository.findByRoleAndUsername(UserRole.EMPLOYEE, "employee")).thenReturn(Optional.of(employeeUser));
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+
+        User returnedUser = employeeService.get("employee");
+
+        Assertions.assertNotNull(returnedUser);
+        Assertions.assertEquals(employeeUser.getUsername(), returnedUser.getUsername());
+        Assertions.assertTrue(passwordEncoder.matches(employeeUser.getPassword(), returnedUser.getPassword()));
+        Assertions.assertEquals(employeeUser.getEmail(), returnedUser.getEmail());
+        Assertions.assertEquals(employeeUser.getRole().name(), returnedUser.getRole().name());
+        Assertions.assertEquals(employeeDetails.getName(), ((EmployeeDetails) returnedUser.getDetails()).getName());
+        Assertions.assertEquals(employeeDetails.getSurname(), ((EmployeeDetails) returnedUser.getDetails()).getSurname());
+        Assertions.assertEquals(employeeDetails.getDescription(), ((EmployeeDetails) returnedUser.getDetails()).getDescription());
+        Assertions.assertIterableEquals(((EmployeeDetails) employeeUser.getDetails()).getSkills(), ((EmployeeDetails) returnedUser.getDetails()).getSkills());
+    }
+
+    @Test
+    void updateTest(){
+        when(userRepository.getReferenceById(employeeId)).thenReturn(employeeUser);
+        when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
+        when(principal.getName()).thenReturn("employee");
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+        when(passwordEncoder.matches("newPassword", "encodedNewPassword")).thenReturn(true);
+        when(userRepository.save(employeeUser)).thenReturn(employeeUser);
+
+        EmployeeUpdateDTO dto = EmployeeUpdateDTO.builder()
+                .id(employeeId).name("Emm").surname("Ployeee").username("nemployee").email("nemployee@mail.com").description("hello").password("newPassword")
+                .build();
+
+        User updatedUser = employeeService.update(dto, principal);
+
+        verify(userRepository).save(employeeUser);
+
+        Assertions.assertNotNull(updatedUser);
+        Assertions.assertEquals(dto.getUsername(), updatedUser.getUsername());
+        Assertions.assertTrue(passwordEncoder.matches(dto.getPassword(), updatedUser.getPassword()));
+        Assertions.assertEquals(dto.getEmail(), updatedUser.getEmail());
+        Assertions.assertEquals(dto.getName(), ((EmployeeDetails) updatedUser.getDetails()).getName());
+        Assertions.assertEquals(dto.getSurname(), ((EmployeeDetails) updatedUser.getDetails()).getSurname());
+        Assertions.assertEquals(dto.getDescription(), ((EmployeeDetails) updatedUser.getDetails()).getDescription());
+    }
+
+    @Test
+    void updateNotAllValuesTest(){
+        when(userRepository.getReferenceById(employeeId)).thenReturn(employeeUser);
+        when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
+        when(principal.getName()).thenReturn("employee");
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        when(userRepository.save(employeeUser)).thenReturn(employeeUser);
+
+        EmployeeUpdateDTO dto = EmployeeUpdateDTO.builder()
+                .id(employeeId).surname("Ployeee").username("nemployee").email("nemployee@mail.com")
+                .build();
+
+        User updatedUser = employeeService.update(dto, principal);
+
+        verify(userRepository).save(employeeUser);
+
+        Assertions.assertNotNull(updatedUser);
+        Assertions.assertEquals(dto.getUsername(), updatedUser.getUsername());
+        Assertions.assertTrue(passwordEncoder.matches("password", updatedUser.getPassword()));
+        Assertions.assertEquals(dto.getEmail(), updatedUser.getEmail());
+        Assertions.assertEquals("Em", ((EmployeeDetails) updatedUser.getDetails()).getName());
+        Assertions.assertEquals(dto.getSurname(), ((EmployeeDetails) updatedUser.getDetails()).getSurname());
+        Assertions.assertEquals("", ((EmployeeDetails) updatedUser.getDetails()).getDescription());
     }
 }

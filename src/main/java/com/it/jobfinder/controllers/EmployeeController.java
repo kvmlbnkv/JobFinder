@@ -33,7 +33,7 @@ public class EmployeeController {
 
     @PostMapping("addSkill")
     public ResponseEntity<List<Skill>> addSkillToEmployee(@RequestBody UserSkillDTO dto, Principal principal){
-        return new ResponseEntity<>(this.employeeService.addSkillToUser(dto, principal), HttpStatus.OK);
+        return new ResponseEntity<>(this.employeeService.addSkillToEmployee(dto, principal), HttpStatus.OK);
     }
 
     @DeleteMapping("removeSkill")
