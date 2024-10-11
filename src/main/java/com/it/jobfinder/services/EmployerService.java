@@ -65,7 +65,7 @@ public class EmployerService {
     }
 
     public User get(String username) {
-        return null;
+        return this.userRepository.findByRoleAndUsername(UserRole.EMPLOYER, username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     public User update(EmployerUpdateDTO dto, Principal principal) {
@@ -75,12 +75,23 @@ public class EmployerService {
         if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(dto.getId()))
             throw new IncorrectCredentialsException("Can't update this user");
 
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+        if (dto.getUsername() != null){
+            Optional<User> userOptional = userRepository.findByUsername(dto.getUsername());
+            if (userOptional.isPresent()) throw new UserDuplicateException("Username taken");
+            else user.setUsername(dto.getUsername());
+        }
+
+        if (dto.getEmail() != null){
+            Optional<User> email = userRepository.findByEmail(dto.getEmail());
+            if (email.isPresent()) throw new UserDuplicateException("Email taken");
+            user.setEmail(dto.getEmail());
+        }
+
+        if (dto.getPassword() != null) user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+
         EmployerDetails employerDetails = (EmployerDetails) user.getDetails();
-        employerDetails.setName(dto.getName());
-        employerDetails.setDescription(dto.getDescription());
+        if (dto.getName() != null) employerDetails.setName(dto.getName());
+        if (dto.getDescription() != null) employerDetails.setDescription(dto.getDescription());
 
         return this.userRepository.save(user);
     }
