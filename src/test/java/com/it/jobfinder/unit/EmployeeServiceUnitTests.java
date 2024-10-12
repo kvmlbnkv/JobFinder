@@ -54,15 +54,18 @@ public class EmployeeServiceUnitTests {
     EmployeeService employeeService;
 
 
-
     UUID employeeId = UUID.randomUUID();
     UUID otherEmployeeId = UUID.randomUUID();
+    UUID adminId = UUID.randomUUID();
 
     EmployeeDetails employeeDetails = new EmployeeDetails("Em", "Ployee", "", new ArrayList<>());
     User employeeUser = new User(employeeId, "employee", "password", "employee@mail.com", UserRole.EMPLOYEE, employeeDetails);
 
     EmployeeDetails otherEmployeeDetails = new EmployeeDetails("Emm", "Ploye", "", new ArrayList<>());
     User otherEmployeeUser = new User(otherEmployeeId, "Oemployee", "password", "Oemployee@mail.com", UserRole.EMPLOYEE, otherEmployeeDetails);
+
+    AdminDetails adminDetails = new AdminDetails("Ad", "Min");
+    User adminUser = new User(adminId, "admin", "admin", "admin@admin.com", UserRole.ADMIN, adminDetails);
 
     Skill skill = new Skill("skill");
 
@@ -137,6 +140,22 @@ public class EmployeeServiceUnitTests {
     }
 
     @Test
+    void deleteEmployeeByAdminTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(userDetailsService.loadUserByUsername("admin")).thenReturn(adminUser);
+        when(principal.getName()).thenReturn("admin");
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+
+        LoginDTO dto = LoginDTO.builder()
+                .username("employee").password("password")
+                .build();
+
+        employeeService.deleteEmployee(dto, principal);
+
+        verify(userRepository).delete(employeeUser);
+    }
+
+    @Test
     void deleteEmployeeNotFoundTest(){
         when(userRepository.findByUsername("employee")).thenReturn(Optional.empty());
 
@@ -179,6 +198,23 @@ public class EmployeeServiceUnitTests {
         when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
         when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
         when(principal.getName()).thenReturn("employee");
+        when(skillRepository.findByName("skill")).thenReturn(Optional.of(skill));
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        List<Skill> updatedList = employeeService.addSkillToEmployee(dto, principal);
+
+        verify(userRepository).save(employeeUser);
+        Assertions.assertIterableEquals(List.of(skill), updatedList);
+    }
+
+    @Test
+    void addSkillToEmployeeByAdminTest(){
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(userDetailsService.loadUserByUsername("admin")).thenReturn(adminUser);
+        when(principal.getName()).thenReturn("admin");
         when(skillRepository.findByName("skill")).thenReturn(Optional.of(skill));
 
         UserSkillDTO dto = UserSkillDTO.builder()
@@ -252,6 +288,25 @@ public class EmployeeServiceUnitTests {
         when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
         when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
         when(principal.getName()).thenReturn("employee");
+        when(skillRepository.findByName("skill")).thenReturn(Optional.of(skill));
+
+        UserSkillDTO dto = UserSkillDTO.builder()
+                .skill("skill").username("employee")
+                .build();
+
+        List<Skill> updatedList = employeeService.removeSkillFromEmployee(dto, principal);
+
+        verify(userRepository).save(employeeUser);
+        Assertions.assertIterableEquals(List.of(), updatedList);
+    }
+
+    @Test
+    void removeSkillFromEmployeeByAdminTest(){
+        ((EmployeeDetails) employeeUser.getDetails()).getSkills().add(skill);
+
+        when(userRepository.findByUsername("employee")).thenReturn(Optional.of(employeeUser));
+        when(userDetailsService.loadUserByUsername("admin")).thenReturn(adminUser);
+        when(principal.getName()).thenReturn("admin");
         when(skillRepository.findByName("skill")).thenReturn(Optional.of(skill));
 
         UserSkillDTO dto = UserSkillDTO.builder()
@@ -346,6 +401,32 @@ public class EmployeeServiceUnitTests {
         when(userRepository.getReferenceById(employeeId)).thenReturn(employeeUser);
         when(userDetailsService.loadUserByUsername("employee")).thenReturn(employeeUser);
         when(principal.getName()).thenReturn("employee");
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+        when(passwordEncoder.matches("newPassword", "encodedNewPassword")).thenReturn(true);
+        when(userRepository.save(employeeUser)).thenReturn(employeeUser);
+
+        EmployeeUpdateDTO dto = EmployeeUpdateDTO.builder()
+                .id(employeeId).name("Emm").surname("Ployeee").username("nemployee").email("nemployee@mail.com").description("hello").password("newPassword")
+                .build();
+
+        User updatedUser = employeeService.update(dto, principal);
+
+        verify(userRepository).save(employeeUser);
+
+        Assertions.assertNotNull(updatedUser);
+        Assertions.assertEquals(dto.getUsername(), updatedUser.getUsername());
+        Assertions.assertTrue(passwordEncoder.matches(dto.getPassword(), updatedUser.getPassword()));
+        Assertions.assertEquals(dto.getEmail(), updatedUser.getEmail());
+        Assertions.assertEquals(dto.getName(), ((EmployeeDetails) updatedUser.getDetails()).getName());
+        Assertions.assertEquals(dto.getSurname(), ((EmployeeDetails) updatedUser.getDetails()).getSurname());
+        Assertions.assertEquals(dto.getDescription(), ((EmployeeDetails) updatedUser.getDetails()).getDescription());
+    }
+
+    @Test
+    void updateByAdminTest(){
+        when(userRepository.getReferenceById(employeeId)).thenReturn(employeeUser);
+        when(userDetailsService.loadUserByUsername("admin")).thenReturn(adminUser);
+        when(principal.getName()).thenReturn("admin");
         when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
         when(passwordEncoder.matches("newPassword", "encodedNewPassword")).thenReturn(true);
         when(userRepository.save(employeeUser)).thenReturn(employeeUser);

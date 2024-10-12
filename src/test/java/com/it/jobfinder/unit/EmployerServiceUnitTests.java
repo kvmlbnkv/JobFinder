@@ -220,6 +220,32 @@ public class EmployerServiceUnitTests {
     }
 
     @Test
+    void updateByAdminTest(){
+        when(userRepository.getReferenceById(employerId)).thenReturn(employerUser);
+        when(principal.getName()).thenReturn("admin");
+        when(userDetailsService.loadUserByUsername("admin")).thenReturn(adminUser);
+        when(passwordEncoder.encode("nPassword")).thenReturn("encodednPassword");
+        when(passwordEncoder.matches("nPassword", "encodednPassword")).thenReturn(true);
+        when(userRepository.save(employerUser)).thenReturn(employerUser);
+
+        EmployerUpdateDTO dto = EmployerUpdateDTO.builder()
+                .id(employerId).username("nemployer").email("nemployer@mail.com").password("nPassword").name("nEmployer").description("hello")
+                .build();
+
+        User updatedUser = employerService.update(dto, principal);
+
+        verify(userRepository).save(employerUser);
+
+        Assertions.assertNotNull(updatedUser);
+        Assertions.assertEquals(dto.getId(), updatedUser.getId());
+        Assertions.assertEquals(dto.getUsername(), updatedUser.getUsername());
+        Assertions.assertEquals(dto.getEmail(), updatedUser.getEmail());
+        Assertions.assertTrue(passwordEncoder.matches(dto.getPassword(), updatedUser.getPassword()));
+        Assertions.assertEquals(dto.getName(), ((EmployerDetails) updatedUser.getDetails()).getName());
+        Assertions.assertEquals(dto.getDescription(), ((EmployerDetails) updatedUser.getDetails()).getDescription());
+    }
+
+    @Test
     void updateNotAllValuesTest(){
         when(userRepository.getReferenceById(employerId)).thenReturn(employerUser);
         when(principal.getName()).thenReturn("employer");
