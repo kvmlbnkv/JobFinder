@@ -27,17 +27,14 @@ public class SkillService {
         return this.skillRepository.findByName(name).orElseThrow(() -> new NoSuchSkillException("There's no such skill in db"));
     }
 
-    public Skill addSkill(SkillDTO dto) {
-        String name = dto.getSkill();
+    public Skill addSkill(String name) {
+        if (skillRepository.findByName(name).isPresent()) throw new SkillDuplicateException("Skill already in db");
 
-        Optional<Skill> skill = skillRepository.findByName(name);
-        if (skill.isPresent()) throw new SkillDuplicateException("Skill already in db");
-
-        return skillRepository.save(new Skill(dto.getSkill()));
+        return skillRepository.save(new Skill(name));
     }
 
-    public void delete(SkillDTO dto) {
-        Skill skill = this.skillRepository.findByName(dto.getSkill())
+    public void delete(String name) {
+        Skill skill = this.skillRepository.findByName(name)
                 .orElseThrow(() -> new NoSuchSkillException("No such skill"));
 
         this.skillRepository.delete(skill);

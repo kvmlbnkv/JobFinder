@@ -59,18 +59,21 @@ public class JobService {
 
         User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
 
-        if (principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(job.getUser().getId()))
+        if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(job.getUser().getId()))
             throw new IncorrectCredentialsException("Can't update this job");
 
-        job.setName(dto.getName());
-        job.setDescription(dto.getDescription());
+        if(dto.getName() != null) job.setName(dto.getName());
+        if(dto.getDescription() != null) job.setDescription(dto.getDescription());
 
-        List<Skill> requirements = new ArrayList<>();
-        for (SkillDTO skillDTO : dto.getRequirements()){
-            this.skillRepository.findByName(skillDTO.getSkill()).ifPresent(requirements::add);
+        if(dto.getRequirements() != null){
+            List<Skill> requirements = new ArrayList<>();
+            for (SkillDTO skillDTO : dto.getRequirements()){
+                this.skillRepository.findByName(skillDTO.getSkill()).ifPresent(requirements::add);
+            }
+            job.setRequirements(requirements);
         }
-        job.setRequirements(requirements);
-        job.setDueTo(dto.getDueTo());
+
+        if(dto.getDueTo() != null) job.setDueTo(dto.getDueTo());
 
         return jobRepository.save(job);
     }
@@ -80,7 +83,7 @@ public class JobService {
 
         User principalUser = (User) userDetailsService.loadUserByUsername(principal.getName());
 
-        if (principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(job.getUser().getId()))
+        if (!principalUser.getRole().name().equals(UserRole.ADMIN.name()) && !principalUser.getId().equals(job.getUser().getId()))
             throw new IncorrectCredentialsException("Can't close this job");
 
         job.setClosed(true);

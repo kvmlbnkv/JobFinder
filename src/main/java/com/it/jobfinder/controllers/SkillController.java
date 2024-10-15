@@ -31,13 +31,13 @@ public class SkillController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<Skill> addSkill(@RequestBody SkillDTO dto){
-        return new ResponseEntity<>(this.skillService.addSkill(dto), HttpStatus.OK);
+    public ResponseEntity<Skill> addSkill(@RequestBody String name){
+        return new ResponseEntity<>(this.skillService.addSkill(name), HttpStatus.OK);
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Void> deleteSkill(@RequestBody SkillDTO dto){
-        this.skillService.delete(dto);
+    public ResponseEntity<Void> deleteSkill(@RequestBody String name){
+        this.skillService.delete(name);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
